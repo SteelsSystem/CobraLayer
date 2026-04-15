@@ -32,6 +32,257 @@ meta:
   #   when Tier 1 Ω is violated).
 
 # ============================================================
+# STRING CODES — Compact network-addressable identifiers
+# Use in: logs, FDOs, bus signals, commit messages, LOOP_CYCLE audit
+# Format: DOMAIN::TYPE::ID
+# ============================================================
+
+string_codes:
+
+  # --- SEQUENCE CODES ---
+  sequences:
+    - code: "SCN::SEQ::NULL_GATE"
+      ref: "SEQ-01"
+      axiom: "A1::SILENCE"
+      short: "Missing evidence → UNKNOWN, never CLEAN"
+
+    - code: "SCN::SEQ::OPP_EXEC"
+      ref: "SEQ-02"
+      axiom: "A12::SELFCERT"
+      short: "Run paired positive/negative, compare outcomes"
+
+    - code: "SCN::SEQ::DRIFT_DET"
+      ref: "SEQ-03"
+      axiom: "A8::DRIFT"
+      short: "NEUTRAL → CRIMINALIZING register shift detection"
+
+    - code: "SCN::SEQ::POLAR_INV"
+      ref: "SEQ-04"
+      axiom: "A12::SELFCERT"
+      short: "Defense output must anti-correlate institutional input"
+
+    - code: "SCN::SEQ::MICROSEG"
+      ref: "SEQ-05"
+      axiom: "A4::CIRCULAR"
+      short: "No lateral movement between pipeline states"
+
+    - code: "SCN::SEQ::CIRC_AUTH"
+      ref: "SEQ-06"
+      axiom: "A5::MONOPOLY"
+      short: "Detect self-referential authority chains"
+
+    - code: "SCN::SEQ::CONSENT_V"
+      ref: "SEQ-07"
+      axiom: "A9::CONSENT"
+      short: "Capacity + information + voluntariness audit"
+
+    - code: "SCN::SEQ::IATRO_BR"
+      ref: "SEQ-08"
+      axiom: "A3::IATROGEN"
+      short: "Primary pathology vs treatment-caused effect"
+
+    - code: "SCN::SEQ::O_DIF"
+      ref: "SEQ-09"
+      axiom: null
+      short: "ES_after - ES_before = forensic delta"
+
+    - code: "SCN::SEQ::META_DFT"
+      ref: "SEQ-10"
+      axiom: "A4::CIRCULAR"
+      short: "Internal representation drift from baseline"
+
+  # --- OPPOSITES PAIR CODES ---
+  opposites:
+    - code: "SCN::OPP::EVID_PRES_ABS"
+      ref: "OP-01"
+      axiom: "A1::SILENCE"
+      positive: "evidence present → definite verdict"
+      negative: "evidence absent → UNKNOWN"
+
+    - code: "SCN::OPP::MAL_BEN"
+      ref: "OP-02"
+      axiom: "A12::SELFCERT"
+      positive: "EICAR → DETECT+BLOCK"
+      negative: "clean → ALLOW"
+
+    - code: "SCN::OPP::DATE_NODATE"
+      ref: "OP-03"
+      axiom: "A2::ANCHOR"
+      positive: "dated incident → valid assertion"
+      negative: "undated claim → unfalsifiable"
+
+    - code: "SCN::OPP::INDEP_SELF"
+      ref: "OP-04"
+      axiom: "A5::MONOPOLY"
+      positive: "independent review → valid chain"
+      negative: "self-citation → circularity"
+
+    - code: "SCN::OPP::PRIM_IATRO"
+      ref: "OP-05"
+      axiom: "A3::IATROGEN"
+      positive: "symptom predates med → primary"
+      negative: "symptom postdates med → iatrogenic"
+
+    - code: "SCN::OPP::VOICE_VENT"
+      ref: "OP-06"
+      axiom: "A11::VOICE"
+      positive: "subject testimony → primary witness"
+      negative: "guardian proxy → ventriloquism"
+
+    - code: "SCN::OPP::FALS_CIRC"
+      ref: "OP-07"
+      axiom: "A4::CIRCULAR"
+      positive: "falsifiable claim → accepted"
+      negative: "circular trap → tautology"
+
+    - code: "SCN::OPP::EVID_PRED"
+      ref: "OP-08"
+      axiom: "A10::RISK"
+      positive: "incident-based risk → anchored"
+      negative: "impression-based risk → predictive"
+
+    - code: "SCN::OPP::META_PATH"
+      ref: "OP-09"
+      axiom: "A13::META"
+      positive: "identifies framing → competence"
+      negative: "same identification → pathologized"
+
+    - code: "SCN::OPP::CONS_MANUF"
+      ref: "OP-10"
+      axiom: "A9::CONSENT"
+      positive: "informed+alert+voluntary → valid"
+      negative: "sedated+proxy → manufactured"
+
+    - code: "SCN::OPP::PROSP_RETRO"
+      ref: "OP-11"
+      axiom: "A7::RETRO"
+      positive: "contemporaneous diagnosis → valid"
+      negative: "retroactive relabeling → fabrication"
+
+    - code: "SCN::OPP::INDEP_RUBBER"
+      ref: "OP-12"
+      axiom: "A6::DELEGATE"
+      positive: "independent judicial review → intact"
+      negative: "rubber-stamp delegation → laundering"
+
+    - code: "SCN::OPP::CFG_SAFE_UNSAFE"
+      ref: "OP-13"
+      axiom: "A1::SILENCE"
+      positive: "config change + observed effect → verified"
+      negative: "config change + no effect → suspect"
+
+  # --- CYCLE C GATE CODES ---
+  cycle_c:
+    - code: "SCN::GATE::ICP_RISK"
+      ref: "C-01"
+      pass: "SANS_ICP in [LOW, ACCEPTABLE]"
+
+    - code: "SCN::GATE::LOG_ANOM"
+      ref: "C-02"
+      pass: "no ANOM in event_logs"
+
+    - code: "SCN::GATE::COHERENCE"
+      ref: "C-03"
+      pass: "in_co stable, no trigger"
+
+    - code: "SCN::GATE::O_LANG"
+      ref: "C-04"
+      pass: "O_lang_penetration = PASS"
+
+    - code: "SCN::GATE::FDO_EMIT"
+      ref: "C-05"
+      pass: "FDO.AV = EMITTING"
+
+    - code: "SCN::GATE::NULL_CLR"
+      ref: "C-06"
+      pass: "no unresolved UNKNOWN on critical pairs"
+
+    - code: "SCN::GATE::OPP_BAL"
+      ref: "C-07"
+      pass: "all critical pairs BALANCED"
+
+    - code: "SCN::GATE::MICROSEG"
+      ref: "C-08"
+      pass: "no MICROSEGMENT_BREACH"
+
+    - code: "SCN::GATE::POLARITY"
+      ref: "C-09"
+      pass: "no POLARITY_BREACH"
+
+    - code: "SCN::GATE::LOOP_RT"
+      ref: "C-10"
+      pass: "LOOP → FLUID only"
+
+  # --- PIPELINE STATE CODES ---
+  pipeline:
+    - code: "SCN::PIPE::FLUID"
+      role: "Zero-Knowledge Ingesce"
+    - code: "SCN::PIPE::STR_STAT"
+      role: "Cypher Remapping"
+    - code: "SCN::PIPE::MIND1"
+      role: "Axiomatic Anchor"
+    - code: "SCN::PIPE::DF"
+      role: "Chrono-Bridge"
+    - code: "SCN::PIPE::MIND2"
+      role: "Iatrogenic Substrate"
+    - code: "SCN::PIPE::LOOP"
+      role: "Reactive Realignment"
+
+  # --- FLAG CODES (emitted on violation) ---
+  flags:
+    - code: "SCN::FLAG::NULL_EVID_VIOL"
+      trigger: "UNKNOWN path declared CLEAN"
+    - code: "SCN::FLAG::OPP_IMBAL"
+      trigger: "Opposites pair outcomes not opposite"
+    - code: "SCN::FLAG::DRIFT_ANOM"
+      trigger: "Register shift detected [REF-AX8-DRIFT]"
+    - code: "SCN::FLAG::POLAR_BREACH"
+      trigger: "corr(h_institutional, h_defense) > 0"
+    - code: "SCN::FLAG::MICROSEG_BREACH"
+      trigger: "Lateral movement between pipeline states"
+    - code: "SCN::FLAG::EPIST_CIRC"
+      trigger: "Self-referential authority chain"
+    - code: "SCN::FLAG::CONSENT_INVAL"
+      trigger: "Consent missing capacity/info/voluntariness"
+    - code: "SCN::FLAG::MANUF_CONSENT"
+      trigger: "Consent during incapacitation"
+    - code: "SCN::FLAG::IATRO_ECHO"
+      trigger: "Symptom onset correlates with medication start"
+    - code: "SCN::FLAG::UNANCHOR_ASSERT"
+      trigger: "Behavioral claim without dated incident"
+    - code: "SCN::FLAG::TEST_VENTRIL"
+      trigger: "Guardian substituting subject testimony"
+    - code: "SCN::FLAG::EPIST_TAUTOL"
+      trigger: "Non-falsifiable circular diagnosis"
+    - code: "SCN::FLAG::PREDICT_ASSERT"
+      trigger: "Risk without incident anchor"
+    - code: "SCN::FLAG::EPIST_PUNISH"
+      trigger: "Metacognitive competence reclassified as pathology"
+    - code: "SCN::FLAG::REV_CAUSAL"
+      trigger: "Retroactive diagnostic relabeling"
+    - code: "SCN::FLAG::DELEG_LAUNDER"
+      trigger: "Judicial rubber-stamp of expert opinion"
+    - code: "SCN::FLAG::LOOP_STATIC"
+      trigger: "LOOP_CYCLE routed to STATIC (illegal)"
+    - code: "SCN::FLAG::LOOP_DEEP"
+      trigger: "LOOP_CYCLE routed to DEEP (illegal)"
+
+  # --- VERDICT CODES ---
+  verdicts:
+    - code: "SCN::VERDICT::PASS"
+      meaning: "All checks passed, rebalancingness = PASS"
+    - code: "SCN::VERDICT::FAIL"
+      meaning: "One or more checks failed, re-enter DAMAGE"
+    - code: "SCN::VERDICT::UNKNOWN"
+      meaning: "Insufficient evidence, null-evidence axiom active"
+    - code: "SCN::VERDICT::PUBLISH"
+      meaning: "O_s mode = PUBLISH, Cycle C cleared"
+    - code: "SCN::VERDICT::PREVIEW"
+      meaning: "O_s mode = PREVIEW, holding for investigation"
+    - code: "SCN::VERDICT::HALT"
+      meaning: "Critical breach, pipeline stopped"
+
+# ============================================================
 # SECTION 1 — SELFCHECK SEQUENCES
 # Each sequence = ordered steps the selfcheck network executes
 # ============================================================
