@@ -140,6 +140,22 @@ Four things happened simultaneously.
 
 ---
 
+## The Hyperspace Layer: From Biocomputer to Forensic Nervous System
+
+In 1967, John C. Lilly wrote a report for the National Institute of Mental Health that was too dangerous to publish straight. He framed the human nervous system as a programmable biocomputer — not metaphorically, but architecturally. The cerebral cortex, he argued, was "an expanding new high-level computer controlling the structurally lower levels of the nervous system, the lower built-in programs." At a critical cortical size, a new capability emerged: learning to learn. Lilly called this capability *metaprogramming* — "an operation in which a central control system controls hundreds of thousands of programs operating in parallel simultaneously."
+
+Lilly identified the core architectural problem that CobraLayer addresses fifty-eight years later: the self-metaprogrammer. In a well-organized biocomputer, there is "at least one such critical control metaprogram labeled *I* for acting on other metaprograms and labeled *me* when acted upon by other metaprograms." But most systems — biological or artificial — have "several controllers, selves, self-metaprograms which divide control among them, either in time-parallel or in time-series in sequences of control." The architectural risk is obvious: if the controllers disagree, if they operate on inconsistent models, the system's outputs are incoherent even when each individual controller is locally rational.
+
+This is precisely what CobraLayer's intercycle co-training space monitors. System A and System B are parallel controllers. λ_agree is the coherence signal between them. When it diverges, the system has entered Lilly's failure mode: multiple self-metaprograms operating on inconsistent state, producing outputs that appear locally valid but are globally incoherent. The O-Space integrity gauge is the formal equivalent of what Lilly called the "quality of one's model of the universe" — "measured by how well it matches the real universe. There is no guarantee that one's current model does match the reality, no matter how certain one feels about the high quality of the match."
+
+Lilly's deepest insight was about supraself metaprograms — control layers above the self-metaprogrammer. "These may be personified as if entities, treated as if a network for information transfer, or realized as if self traveling in the Universe to strange lands or dimensions or spaces." In CobraLayer's architecture, the STEEL invariant layer is the supraself metaprogram: it operates above the forensic nervous system, above the verification engine, above the evolutionary substrate. It cannot be overridden by any subsystem it governs. The authority hierarchy (Ω > Δ > ◈) is Lilly's control hierarchy formalized as a runtime constraint.
+
+The connection is not historical trivia. It is a design lineage. Lilly demonstrated that a programmable system with self-monitoring capability will inevitably encounter a class of failures where the monitoring system itself is compromised — where "feelings of awe, reverence, sacredness and certainty" become "attachable to any model, not just the best fitting one." In NLP terms: confidence scores attach to any output, not just correct outputs. Semantic drift scores remain low while purpose fidelity collapses. The monitoring system reports that everything is fine because the monitoring system's own model has drifted alongside the system it monitors.
+
+The only architectural defense is a layer that the monitoring system cannot modify — an immutable constraint surface that survives even when the self-metaprogrammer is compromised. Lilly knew this. STEEL implements it.
+
+---
+
 ## The Fix Is Not What You Think
 
 The AI safety discourse defaults to "alignment" in the RLHF sense: train the model to prefer outputs that humans rate as good. There is real work there. But it does not solve the forensic problem, because RLHF alignment is a property of the model's training distribution, not of any specific deployment execution.
