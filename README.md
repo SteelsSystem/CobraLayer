@@ -16,8 +16,8 @@ No system, human or algorithmic, may present subjective interpretation as empiri
 
 ```
 architecton/          ← PRIMARY: Pipeline Router HTML
-  index.html            Architecton — triple O energy layer, RYNA, spectrum reactivity
-  assets/               energy.jpg · energy-glyph.jpg · energy-green.jpg
+  index.html            Architecton — quad O energy layer, RYNA, spectrum reactivity
+  assets/               energy.jpg · energy-glyph.jpg · energy-green.jpg · spheres.jpg
 
 docs/                 ← Documentation & formal outputs
   O-LANG-PENETRAT.md    O-lang penetrat — boolean algebra as language
@@ -29,8 +29,6 @@ docs/                 ← Documentation & formal outputs
 engine/               ← Backend + frontend codebase
   server.js             Express + Prisma + Gemini 2.5 Flash API
   LexForensicaVault.js  React frontend — SecureStorage, AES-256-GCM, IndexedDB
-  LexForensicaVault.jsx React JSX variant
-  Reactapp.txt          Full app source
   DEPENDENCY-MATRIX.pdf Operational dependency matrix v8.0
 
 research/             ← Source objects — retrained, verified, set
@@ -93,13 +91,14 @@ Authority:           Ω > Δ > ◈ — unoverridable
 Živý Archiv:         REMOVED — 8 holes exposed
 ```
 
-## Triple O Energy Layer
+## Quad O Energy Layer
 
 | O | Source | Color | Blend |
 |---|---|---|---|
 | Original | energy.jpg | Red | screen · 6%→20% |
 | Generated | energy-glyph.jpg | Crimson/Cyan | screen · 3%→14% |
 | Green Eye | energy-green.jpg | Green (#00ff41) | screen · 0%→12% |
+| Spheres | spheres.jpg | NewSpheres colourspec | screen · 0%→10% |
 
 RYNA between-layer breathes from load. Depth rings accumulate. `\X|#/` origin glyph visible from DEEP_1.
 
