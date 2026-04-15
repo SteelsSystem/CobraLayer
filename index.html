@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CobraLayer — _Sec</title>
+<meta name="description" content="CobraLayer _Sec — Forensic Architecture, Protocol O Deep Map, Axiom Verification, Redline Engine">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300..800;1,300..800&family=Inter:wght@300..700&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════
+   COBRALAYER — _SEC · DESIGN TOKENS
+   ══════════════════════════════════════════════════════════ */
+:root {
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --text-xs:   clamp(0.75rem,  0.7rem  + 0.25vw, 0.875rem);
+  --text-sm:   clamp(0.875rem, 0.8rem  + 0.35vw, 1rem);
+  --text-base: clamp(1rem,     0.95rem + 0.25vw, 1.125rem);
+  --text-lg:   clamp(1.125rem, 1rem    + 0.75vw, 1.5rem);
+  --text-xl:   clamp(1.5rem,   1.2rem  + 1.25vw, 2.25rem);
+  --text-2xl:  clamp(2rem,     1.2rem  + 2.5vw, 3.5rem);
+  --text-hero: clamp(3rem,     0.5rem  + 7vw, 6rem);
+
+  --space-1: .25rem; --space-2: .5rem; --space-3: .75rem;
+  --space-4: 1rem;   --space-5: 1.25rem; --space-6: 1.5rem;
+  --space-8: 2rem;   --space-10: 2.5rem; --space-12: 3rem;
+  --space-16: 4rem;  --space-20: 5rem;
+
+  --radius-sm: .375rem; --radius-md: .5rem;
+  --radius-lg: .75rem;  --radius-xl: 1rem;
+  --radius-full: 9999px;
+
+  --transition: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* COBRALAYER DARK PALETTE */
+  --bg:          #060708;
+  --surface:     #0c0d0f;
+  --surface-2:   #111316;
+  --surface-3:   #16181c;
+  --border:      rgba(255,255,255,0.06);
+  --border-mid:  rgba(255,255,255,0.10);
+  --border-bright: rgba(255,255,255,0.18);
+
+  --text:        #d0cec8;
+  --text-muted:  #6a6862;
+  --text-faint:  #3a3832;
+
+  /* COBRA SIGNAL COLORS */
+  --cobra:       #e84545;
+  --cobra-dim:   rgba(232,69,69,0.12);
+  --cobra-glow:  rgba(232,69,69,0.30);
+  --green:       #3cff78;
+  --green-dim:   rgba(60,255,120,0.10);
+  --green-glow:  rgba(60,255,120,0.30);
+  --teal:        #4f98a3;
+  --teal-dim:    rgba(79,152,163,0.10);
+  --gold:        #c3a96b;
+  --gold-dim:    rgba(195,169,107,0.10);
+  --orange:      #fdab43;
+  --orange-dim:  rgba(253,171,67,0.08);
+  --purple:      #a86fdf;
+  --purple-dim:  rgba(168,111,223,0.10);
+  --blue:        #3182ce;
+  --blue-dim:    rgba(49,130,206,0.10);
+  --error:       #d163a7;
+  --error-dim:   rgba(209,99,167,0.08);
+
+  /* SAT/UNSAT/UNKNOWN */
+  --sat:         #3cff78;
+  --sat-dim:     rgba(60,255,120,0.12);
+  --unsat:       #e84545;
+  --unsat-dim:   rgba(232,69,69,0.12);
+  --unknown:     #4a4846;
+  --unknown-dim: rgba(74,72,70,0.15);
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.5);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.6);
+}
+
+/* ══════════════════════════════════════════════════════════
+   BASE
+   ══════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; scroll-padding-top: 64px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+img, svg { display: block; max-width: 100%; }
+button { cursor: pointer; border: none; background: none; font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--cobra); outline-offset: 3px; border-radius: var(--radius-sm); }
+a { color: var(--cobra); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Scanline overlay */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.12) 2px, rgba(0,0,0,0.12) 4px);
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.3;
+}
+
+/* Ambient glow */
+.glow-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.glow-orb { position: absolute; border-radius: 50%; filter: blur(140px); opacity: 0.035; }
+.g1 { width: 700px; height: 700px; background: var(--cobra); top: -300px; left: -200px; animation: drift1 20s ease-in-out infinite alternate; }
+.g2 { width: 500px; height: 500px; background: var(--green); bottom: -100px; right: -200px; animation: drift2 24s ease-in-out infinite alternate; }
+.g3 { width: 400px; height: 400px; background: var(--purple); top: 40%; left: 50%; animation: drift3 18s ease-in-out infinite alternate; }
+@keyframes drift1 { from{transform:translate(0,0)} to{transform:translate(80px,50px)} }
+@keyframes drift2 { from{transform:translate(0,0)} to{transform:translate(-50px,-80px)} }
+@keyframes drift3 { from{transform:translate(0,0)} to{transform:translate(40px,-40px)} }
+
+/* ══════════════════════════════════════════════════════════
+   NAV
+   ══════════════════════════════════════════════════════════ */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 var(--space-6);
+  height: 52px;
+  background: rgba(6,7,8,0.92);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+.topbar-left { display: flex; align-items: center; gap: var(--space-4); }
+.topbar-logo {
+  display: flex; align-items: center; gap: var(--space-2);
+  font-family: var(--font-mono); font-size: var(--text-sm);
+  font-weight: 800; letter-spacing: 0.08em; color: var(--cobra);
+}
+.topbar-logo svg { width: 26px; height: 26px; }
+.topbar-sep { color: var(--text-faint); font-family: var(--font-mono); font-size: var(--text-xs); }
+.nav-links { display: flex; gap: var(--space-1); }
+.nav-link {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  transition: all var(--transition);
+  text-transform: uppercase;
+}
+.nav-link:hover, .nav-link.active { color: var(--text); background: rgba(255,255,255,0.04); text-decoration: none; }
+.topbar-right {
+  display: flex; align-items: center; gap: var(--space-3);
+  font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);
+}
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse-dot 2s ease-in-out infinite; }
+@keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+
+@media (max-width: 700px) {
+  .nav-links { display: none; }
+  .topbar { padding: 0 var(--space-4); }
+}
+
+/* ══════════════════════════════════════════════════════════
+   SECTIONS
+   ══════════════════════════════════════════════════════════ */
+.content { position: relative; z-index: 1; }
+section { padding: clamp(var(--space-12), 6vw, var(--space-20)) var(--space-6); max-width: 1200px; margin: 0 auto; }
+.section-label {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--text-faint); margin-bottom: var(--space-4);
+}
+.section-title {
+  font-family: var(--font-mono); font-size: var(--text-lg); font-weight: 700;
+  color: var(--text); margin-bottom: var(--space-6); letter-spacing: 0.02em;
+}
+
+/* ══════════════════════════════════════════════════════════
+   HERO
+   ══════════════════════════════════════════════════════════ */
+.hero {
+  min-height: 80vh;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  text-align: center;
+  padding: var(--space-20) var(--space-6);
+  position: relative;
+}
+.hero-pre {
+  font-family: var(--font-mono); font-size: var(--text-xs);
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--cobra); margin-bottom: var(--space-4);
+  opacity: 0.8;
+}
+.hero-title {
+  font-family: var(--font-mono); font-size: var(--text-hero);
+  font-weight: 800; letter-spacing: -0.02em;
+  color: var(--text);
+  line-height: 1.05;
+  margin-bottom: var(--space-6);
+}
+.hero-title span { color: var(--cobra); }
+.hero-sub {
+  font-family: var(--font-mono); font-size: var(--text-sm);
+  color: var(--text-muted); max-width: 560px;
+  line-height: 1.7; margin-bottom: var(--space-8);
+}
+.hero-badges {
+  display: flex; gap: var(--space-3); flex-wrap: wrap; justify-content: center;
+}
+.hero-badge {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.1em;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1px solid;
+}
+.hero-badge.green { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+.hero-badge.cobra { border-color: var(--cobra); color: var(--cobra); background: var(--cobra-dim); }
+.hero-badge.teal  { border-color: var(--teal);  color: var(--teal);  background: var(--teal-dim); }
+.hero-badge.purple { border-color: var(--purple); color: var(--purple); background: var(--purple-dim); }
+.hero-badge.gold  { border-color: var(--gold);  color: var(--gold);  background: var(--gold-dim); }
+
+/* Snake SVG animation */
+.cobra-svg { position: absolute; opacity: 0.04; pointer-events: none; }
+.cobra-svg.left { top: 10%; left: 2%; width: 300px; }
+.cobra-svg.right { bottom: 10%; right: 2%; width: 300px; transform: scaleX(-1); }
+
+/* ══════════════════════════════════════════════════════════
+   CARD SYSTEM
+   ══════════════════════════════════════════════════════════ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+  position: relative; overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--card-accent, var(--cobra));
+  opacity: 0.4;
+}
+.card-header {
+  font-family: var(--font-mono); font-size: var(--text-xs);
+  font-weight: 700; letter-spacing: 0.1em;
+  color: var(--text-muted); text-transform: uppercase;
+  margin-bottom: var(--space-4);
+  display: flex; align-items: center; gap: var(--space-2);
+}
+.card-header svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+/* ══════════════════════════════════════════════════════════
+   AXIOM PANEL
+   ══════════════════════════════════════════════════════════ */
+.axiom-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-4);
+}
+.axiom-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+}
+.axiom-row:hover { border-color: var(--border-mid); }
+.axiom-left { display: flex; align-items: center; gap: var(--space-3); }
+.axiom-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  flex-shrink: 0;
+}
+.axiom-dot.sat     { background: var(--sat); box-shadow: 0 0 8px var(--sat-dim); }
+.axiom-dot.unsat   { background: var(--unsat); box-shadow: 0 0 8px var(--unsat-dim); }
+.axiom-dot.unknown { background: var(--unknown); }
+.axiom-id {
+  font-family: var(--font-mono); font-size: var(--text-sm);
+  font-weight: 700; color: var(--text);
+  min-width: 32px;
+}
+.axiom-label {
+  font-family: var(--font-mono); font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+.axiom-right { display: flex; align-items: center; gap: var(--space-2); }
+.axiom-state {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+.axiom-state.sat     { color: var(--sat); background: var(--sat-dim); }
+.axiom-state.unsat   { color: var(--unsat); background: var(--unsat-dim); }
+.axiom-state.unknown { color: var(--unknown); background: var(--unknown-dim); }
+.axiom-evidence {
+  font-family: var(--font-mono); font-size: 9px;
+  color: var(--text-faint);
+}
+
+/* Axiom detail (expanded) */
+.axiom-detail {
+  display: none;
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-3);
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono); font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-top: var(--space-2);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+.axiom-detail.open { display: block; }
+.evidence-tag {
+  display: inline-block;
+  font-size: 9px; padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  margin: 2px 2px;
+}
+.evidence-tag.fdo  { background: var(--green-dim); color: var(--green); border: 1px solid rgba(60,255,120,0.15); }
+.evidence-tag.proto { background: var(--teal-dim); color: var(--teal); border: 1px solid rgba(79,152,163,0.15); }
+
+/* Stats row */
+.axiom-stats {
+  display: flex; gap: var(--space-6); margin-bottom: var(--space-6);
+  flex-wrap: wrap;
+}
+.stat-block {
+  display: flex; flex-direction: column; gap: 2px;
+}
+.stat-value {
+  font-family: var(--font-mono); font-size: var(--text-xl);
+  font-weight: 800; line-height: 1;
+}
+.stat-label {
+  font-family: var(--font-mono); font-size: 9px;
+  letter-spacing: 0.1em; color: var(--text-faint);
+  text-transform: uppercase;
+}
+
+/* ══════════════════════════════════════════════════════════
+   RELATION GRAPH (opos)
+   ══════════════════════════════════════════════════════════ */
+.relation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-3);
+}
+.relation-row {
+  display: flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono); font-size: var(--text-xs);
+}
+.rel-from, .rel-to {
+  padding: 2px 8px; border-radius: var(--radius-sm);
+  font-weight: 600; font-size: 10px;
+}
+.rel-type {
+  font-size: 9px; letter-spacing: 0.1em; font-weight: 700;
+  padding: 2px 6px; border-radius: var(--radius-sm);
+}
+.rel-type.opposes { color: var(--cobra); background: var(--cobra-dim); }
+.rel-type.supports { color: var(--green); background: var(--green-dim); }
+.rel-type.gates { color: var(--orange); background: var(--orange-dim); }
+.rel-type.emits { color: var(--teal); background: var(--teal-dim); }
+.rel-arrow { color: var(--text-faint); }
+.rel-reason { color: var(--text-faint); font-size: 9px; margin-left: auto; max-width: 180px; text-align: right; }
+
+/* ══════════════════════════════════════════════════════════
+   DEEP MAP EMBED
+   ══════════════════════════════════════════════════════════ */
+.map-svg-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: var(--space-6);
+}
+.map-svg-wrap svg { width: 100%; height: auto; display: block; }
+
+/* Node grid */
+.node-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--space-3);
+}
+.node-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  position: relative; overflow: hidden;
+}
+.node-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--nc-color, var(--green));
+  opacity: 0.5;
+}
+.nc-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 4px; }
+.nc-name { font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.nc-status { font-family: var(--font-mono); font-size: 9px; display: flex; align-items: center; gap: 4px; }
+.nc-dot { width: 5px; height: 5px; border-radius: 50%; }
+.nc-dot.active { background: var(--green); animation: pulse-dot 2s infinite; }
+.nc-dot.standby { background: var(--teal); }
+.nc-dot.warn { background: var(--orange); }
+
+/* ══════════════════════════════════════════════════════════
+   REDLINE ENGINE (embedded)
+   ══════════════════════════════════════════════════════════ */
+.redline-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: var(--space-5);
+}
+@media (max-width: 900px) { .redline-grid { grid-template-columns: 1fr; } }
+
+.check-list { display: flex; flex-direction: column; gap: var(--space-3); }
+.check-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer; transition: all var(--transition);
+  user-select: none;
+}
+.check-item:hover { border-color: var(--border-mid); }
+.check-item.active { border-color: var(--green); background: var(--green-dim); }
+.check-item.inactive { border-color: var(--cobra); background: var(--cobra-dim); }
+.check-name { font-size: var(--text-sm); font-weight: 600; }
+.check-weight { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--text-muted); }
+.check-toggle {
+  width: 36px; height: 20px; border-radius: var(--radius-full);
+  position: relative; transition: background var(--transition); flex-shrink: 0;
+}
+.check-toggle.on  { background: var(--green); }
+.check-toggle.off { background: var(--surface-3); border: 1px solid var(--border); }
+.check-toggle::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 16px; height: 16px; border-radius: 50%; background: white;
+  transition: transform var(--transition);
+}
+.check-toggle.on::after { transform: translateX(16px); }
+
+/* Gauge */
+.gauge-wrap { display: flex; flex-direction: column; align-items: center; gap: var(--space-3); }
+.gauge-ring { position: relative; width: 120px; height: 120px; }
+.gauge-ring svg { width: 120px; height: 120px; transform: rotate(-90deg); }
+.gauge-ring circle { fill: none; stroke-width: 8; stroke-linecap: round; }
+.gauge-bg   { stroke: var(--surface-3); }
+.gauge-fill { stroke: var(--green); transition: stroke-dashoffset 0.6s cubic-bezier(0.16,1,0.3,1), stroke 0.4s; }
+.gauge-text {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+}
+.gauge-value { font-size: var(--text-xl); font-weight: 800; line-height: 1; }
+.gauge-label { font-size: var(--text-xs); color: var(--text-muted); letter-spacing: 0.08em; }
+
+/* Equation */
+.equation-block {
+  font-family: var(--font-mono); font-size: var(--text-sm);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  color: var(--gold);
+  word-break: break-all;
+}
+
+/* O-Space canvas */
+.o-space-wrap { position: relative; width: 100%; aspect-ratio: 1; max-width: 280px; margin: 0 auto; }
+#oSpaceCanvas { width: 100%; height: 100%; display: block; }
+
+/* Pipeline */
+.pipeline { display: flex; align-items: center; gap: 0; flex-wrap: wrap; }
+.pipe-step {
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface-2); border: 1px solid var(--border);
+  font-family: var(--font-mono); font-size: var(--text-xs);
+  border-radius: var(--radius-sm); transition: all var(--transition);
+}
+.pipe-step.done { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+.pipe-step.blocked { border-color: var(--cobra); color: var(--cobra); background: var(--cobra-dim); }
+.pipe-step.idle { color: var(--text-muted); }
+.pipe-arrow { color: var(--text-faint); font-size: var(--text-xs); padding: 0 var(--space-1); }
+
+/* Mode banner */
+.mode-banner {
+  display: flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-4); border-radius: var(--radius-lg);
+  border: 1px solid; margin-bottom: var(--space-4);
+}
+.mode-label { font-family: var(--font-mono); font-weight: 700; font-size: var(--text-sm); letter-spacing: 0.08em; }
+.mode-desc { font-size: var(--text-xs); color: var(--text-muted); margin-top: 2px; }
+
+/* Findings */
+.findings-list { display: flex; flex-direction: column; gap: var(--space-2); min-height: 40px; }
+.finding {
+  font-family: var(--font-mono); font-size: var(--text-xs);
+  padding: var(--space-2) var(--space-3);
+  background: var(--cobra-dim); border: 1px solid rgba(232,69,69,0.3);
+  border-radius: var(--radius-sm); color: var(--cobra);
+  animation: slideIn 0.25s ease;
+}
+.no-findings { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--green); padding: var(--space-2); }
+@keyframes slideIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Trace list */
+.trace-list {
+  font-family: var(--font-mono); font-size: var(--text-xs);
+  display: flex; flex-direction: column; gap: var(--space-2);
+  max-height: 160px; overflow-y: auto;
+}
+.trace-entry {
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text-muted);
+}
+.trace-entry.immutable { border-color: var(--green); color: var(--green); }
+.trace-entry.blocked { border-color: var(--cobra); color: var(--cobra); }
+
+/* Vector map */
+.vector-display { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+.vector-cell {
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: var(--space-3);
+  font-family: var(--font-mono);
+}
+.vc-label { font-size: var(--text-xs); color: var(--text-muted); margin-bottom: 4px; }
+.vc-value { font-size: var(--text-lg); font-weight: 700; }
+
+/* Buttons */
+.btn-row { display: flex; gap: var(--space-3); flex-wrap: wrap; }
+.btn {
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono); font-size: var(--text-xs);
+  font-weight: 700; letter-spacing: 0.06em;
+  border: 1px solid; transition: all var(--transition);
+}
+.btn-cobra { background: var(--cobra-dim); border-color: var(--cobra); color: var(--cobra); }
+.btn-green { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+.btn-gold  { background: var(--gold-dim);  border-color: var(--gold);  color: var(--gold); }
+.btn:hover { filter: brightness(1.2); }
+
+/* ══════════════════════════════════════════════════════════
+   FOOTER
+   ══════════════════════════════════════════════════════════ */
+footer.site-footer {
+  padding: var(--space-6);
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono); font-size: var(--text-xs);
+  color: var(--text-faint);
+  text-align: center;
+  background: var(--surface);
+}
+
+/* ══════════════════════════════════════════════════════════
+   TICKER
+   ══════════════════════════════════════════════════════════ */
+.ticker-strip {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+  height: 28px;
+  background: rgba(6,7,8,0.95);
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; overflow: hidden;
+}
+.ticker-label {
+  flex-shrink: 0; padding: 0 12px;
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  color: var(--cobra); letter-spacing: 0.1em;
+  border-right: 1px solid var(--border);
+  height: 100%; display: flex; align-items: center;
+}
+.ticker-scroll { flex: 1; overflow: hidden; }
+.ticker-inner {
+  display: flex; gap: 40px; align-items: center;
+  font-family: var(--font-mono); font-size: 9px; color: var(--text-muted);
+  animation: ticker-move 32s linear infinite;
+  white-space: nowrap;
+}
+@keyframes ticker-move { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+.tick-item { display: flex; align-items: center; gap: 6px; }
+.tick-bullet { color: var(--cobra); }
+
+body { padding-bottom: 28px; }
+</style>
+</head>
+<body>
+
+<!-- AMBIENT -->
+<div class="glow-bg">
+  <div class="glow-orb g1"></div>
+  <div class="glow-orb g2"></div>
+  <div class="glow-orb g3"></div>
+</div>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">
+      <svg viewBox="0 0 26 26" fill="none" aria-label="CobraLayer">
+        <path d="M13 2C7.5 2 3 6.5 3 12c0 3.5 1.8 6.5 4.5 8.3L13 24l5.5-3.7C21.2 18.5 23 15.5 23 12c0-5.5-4.5-10-10-10z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <circle cx="13" cy="11" r="4" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="13" cy="11" r="1.5" fill="currentColor"/>
+        <path d="M9 7L7 4M17 7l2-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      COBRALAYER
+    </div>
+    <span class="topbar-sep">/</span>
+    <nav class="nav-links">
+      <a href="#home" class="nav-link active" onclick="navTo(event,'home')">Home</a>
+      <a href="#axioms" class="nav-link" onclick="navTo(event,'axioms')">Axioms</a>
+      <a href="#deepmap" class="nav-link" onclick="navTo(event,'deepmap')">Deep Map</a>
+      <a href="#redline" class="nav-link" onclick="navTo(event,'redline')">Redline</a>
+      <a href="#opos" class="nav-link" onclick="navTo(event,'opos')">Relations</a>
+    </nav>
+  </div>
+  <div class="topbar-right">
+    <div style="display:flex;align-items:center;gap:5px"><span class="live-dot"></span><span>LIVE</span></div>
+    <span>_Sec</span>
+    <span id="topbarTs" style="color:var(--text-faint)"></span>
+  </div>
+</header>
+
+<!-- CONTENT -->
+<div class="content">
+
+<!-- ════════════════════════════════════════════════════════
+     HERO
+     ════════════════════════════════════════════════════════ -->
+<section class="hero" id="home">
+  <div class="hero-pre">⟨o⟩ Protocol O · Forensic Architecture</div>
+  <h1 class="hero-title">Cobra<span>Layer</span></h1>
+  <p class="hero-sub">
+    Unified security verification layer. Axiom tracking, deep perception mapping,
+    tri-state formal verification, and real-time protocol alignment —
+    all in one forensic control surface.
+  </p>
+  <div class="hero-badges">
+    <span class="hero-badge green">A1–A13 AXIOMS</span>
+    <span class="hero-badge cobra">REDLINE ENGINE</span>
+    <span class="hero-badge teal">DEEP MAP v1.1</span>
+    <span class="hero-badge purple">/depth/layers/opos</span>
+    <span class="hero-badge gold">FDO EMISSION</span>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     AXIOM PANEL
+     ════════════════════════════════════════════════════════ -->
+<section id="axioms">
+  <div class="section-label">Axiom Verification Panel · A1–A13</div>
+  <div class="section-title">Tri-State Axiom Tracking</div>
+
+  <div class="axiom-stats" id="axiomStats"></div>
+  <div id="axiomList"></div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     DEEP MAP
+     ════════════════════════════════════════════════════════ -->
+<section id="deepmap">
+  <div class="section-label">Protocol O · Deep Map v1.1</div>
+  <div class="section-title">⟨O⟩ Forensic Architecture</div>
+
+  <div class="map-svg-wrap">
+    <svg viewBox="0 0 760 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(232,69,69,0.03)" stroke-width="0.5"/>
+        </pattern>
+        <filter id="glow-g"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <marker id="ag" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="rgba(60,255,120,0.6)"/></marker>
+        <marker id="at" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="rgba(79,152,163,0.6)"/></marker>
+        <marker id="ao" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="rgba(253,171,67,0.6)"/></marker>
+        <marker id="ad" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="rgba(195,169,107,0.6)"/></marker>
+      </defs>
+      <rect width="760" height="400" fill="url(#grid)"/>
+
+      <!-- SYSTEM A: AV -->
+      <text x="14" y="34" font-family="JetBrains Mono,monospace" font-size="8" fill="rgba(79,152,163,0.5)" letter-spacing="0.1em">SYSTEM A — AV</text>
+      <rect x="20" y="40" width="90" height="36" rx="4" fill="#0c0d0f" stroke="rgba(79,152,163,0.3)"/>
+      <text x="65" y="55" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#4f98a3" letter-spacing="0.05em">CONFIG</text>
+      <text x="65" y="68" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#2a4a4e">.env + zod</text>
+
+      <rect x="140" y="40" width="90" height="36" rx="4" fill="#0c0d0f" stroke="rgba(79,152,163,0.3)"/>
+      <text x="185" y="55" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#4f98a3">ENGINE</text>
+      <text x="185" y="68" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#2a4a4e">AV core</text>
+
+      <rect x="260" y="40" width="100" height="36" rx="4" fill="#0a1510" stroke="rgba(60,255,120,0.3)" stroke-width="1.5" filter="url(#glow-g)"/>
+      <text x="310" y="55" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#3cff78">SELFCHECK</text>
+      <text x="310" y="68" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#1a4a28">network</text>
+
+      <rect x="390" y="40" width="90" height="36" rx="4" fill="#0c0d0f" stroke="rgba(79,152,163,0.25)"/>
+      <text x="435" y="55" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#4f98a3">OPPOSITES</text>
+      <text x="435" y="68" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#2a4a4e">balance</text>
+
+      <rect x="510" y="40" width="80" height="36" rx="4" fill="#0c0d0f" stroke="rgba(79,152,163,0.25)"/>
+      <text x="550" y="55" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#4f98a3">POLICY</text>
+      <text x="550" y="68" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#2a4a4e">YAML</text>
+
+      <circle cx="650" cy="58" r="22" fill="#0a1510" stroke="#3cff78" stroke-width="1.5" stroke-dasharray="4 2" filter="url(#glow-g)" opacity="0.9"/>
+      <text x="650" y="54" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#3cff78">⟨o⟩</text>
+      <text x="650" y="65" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6" fill="#1a4a28">AV emit</text>
+
+      <!-- AV arrows -->
+      <line x1="110" y1="58" x2="138" y2="58" stroke="rgba(79,152,163,0.4)" marker-end="url(#at)"/>
+      <line x1="230" y1="58" x2="258" y2="58" stroke="rgba(79,152,163,0.4)" marker-end="url(#at)"/>
+      <line x1="360" y1="58" x2="388" y2="58" stroke="rgba(60,255,120,0.5)" stroke-width="1.2" marker-end="url(#ag)"/>
+      <line x1="480" y1="58" x2="508" y2="58" stroke="rgba(79,152,163,0.4)" marker-end="url(#at)"/>
+      <line x1="590" y1="58" x2="626" y2="58" stroke="rgba(60,255,120,0.5)" stroke-width="1.2" marker-end="url(#ag)"/>
+
+      <!-- Output modes -->
+      <rect x="686" y="34" width="62" height="16" rx="3" fill="rgba(109,170,69,0.1)" stroke="rgba(109,170,69,0.2)"/>
+      <text x="717" y="45" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#6daa45" font-weight="700">PUBLISH</text>
+      <rect x="686" y="54" width="62" height="16" rx="3" fill="rgba(209,99,167,0.08)" stroke="rgba(209,99,167,0.2)"/>
+      <text x="717" y="65" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#d163a7" font-weight="700">BLOCK</text>
+      <rect x="686" y="74" width="62" height="16" rx="3" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.06)"/>
+      <text x="717" y="85" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#3a3836" font-weight="700">UNKNOWN</text>
+
+      <!-- SYSTEM B: SANS -->
+      <text x="14" y="124" font-family="JetBrains Mono,monospace" font-size="8" fill="rgba(195,169,107,0.5)" letter-spacing="0.1em">SYSTEM B — SANS / LBNP</text>
+      <rect x="20" y="130" width="100" height="36" rx="4" fill="#0c0d0f" stroke="rgba(195,169,107,0.3)"/>
+      <text x="70" y="145" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#c3a96b">FLUID/ICP</text>
+      <text x="70" y="158" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#3a2e14">state sensor</text>
+
+      <rect x="150" y="130" width="110" height="36" rx="4" fill="#0c0d0f" stroke="rgba(195,169,107,0.3)"/>
+      <text x="205" y="145" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#c3a96b">LBNP / SUIT</text>
+      <text x="205" y="158" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#3a2e14">A_W + A_F</text>
+
+      <rect x="290" y="130" width="100" height="36" rx="4" fill="#0c0d0f" stroke="rgba(195,169,107,0.35)"/>
+      <text x="340" y="145" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#c3a96b">OCULAR</text>
+      <text x="340" y="158" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#3a2e14">outcome</text>
+
+      <circle cx="450" cy="148" r="22" fill="#1a1500" stroke="#c3a96b" stroke-width="1.5" stroke-dasharray="4 2" opacity="0.9"/>
+      <text x="450" y="144" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#c3a96b">⟨o⟩</text>
+      <text x="450" y="155" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="6" fill="#3a2e14">SANS emit</text>
+
+      <line x1="120" y1="148" x2="148" y2="148" stroke="rgba(195,169,107,0.4)" marker-end="url(#ad)"/>
+      <line x1="260" y1="148" x2="288" y2="148" stroke="rgba(195,169,107,0.4)" marker-end="url(#ad)"/>
+      <line x1="390" y1="148" x2="426" y2="148" stroke="rgba(195,169,107,0.5)" marker-end="url(#ad)"/>
+
+      <!-- INTERCYCLE -->
+      <text x="14" y="214" font-family="JetBrains Mono,monospace" font-size="8" fill="rgba(253,171,67,0.5)" letter-spacing="0.1em">INTERCYCLE CO-TRAINING SPACE</text>
+      <rect x="20" y="220" width="530" height="90" rx="6" fill="#0f0d08" stroke="rgba(253,171,67,0.2)" stroke-dasharray="6 3"/>
+
+      <rect x="200" y="232" width="140" height="70" rx="5" fill="#121208" stroke="rgba(253,171,67,0.35)" stroke-width="1.5"/>
+      <text x="270" y="256" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#fdab43" font-weight="600">SHARED</text>
+      <text x="270" y="268" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#fdab43" font-weight="600">TRUNK</text>
+      <text x="270" y="282" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#5a4020">latent repr.</text>
+      <text x="270" y="293" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#5a4020">λ_agree</text>
+
+      <rect x="480" y="244" width="60" height="52" rx="4" fill="#0c0d0f" stroke="rgba(60,255,120,0.2)"/>
+      <text x="510" y="260" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#3cff78">in-co</text>
+      <text x="510" y="275" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="13" fill="#3cff78" font-weight="700">0.38</text>
+      <text x="510" y="288" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#1a4a28">stable</text>
+
+      <!-- vertical arrows -->
+      <line x1="310" y1="76" x2="310" y2="216" stroke="rgba(60,255,120,0.15)" stroke-dasharray="4 3" marker-end="url(#ag)"/>
+      <line x1="340" y1="166" x2="270" y2="218" stroke="rgba(195,169,107,0.15)" stroke-dasharray="4 3" marker-end="url(#ad)"/>
+
+      <!-- FDO LAYER -->
+      <text x="14" y="334" font-family="JetBrains Mono,monospace" font-size="8" fill="rgba(60,255,120,0.3)" letter-spacing="0.1em">FDO EMISSION LAYER</text>
+      <rect x="20" y="340" width="700" height="36" rx="5" fill="#0c1008" stroke="rgba(60,255,120,0.12)"/>
+      <text x="60" y="360" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="rgba(60,255,120,0.6)">FDO AV</text>
+      <text x="170" y="360" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="rgba(195,169,107,0.6)">FDO SANS</text>
+      <text x="300" y="360" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="rgba(253,171,67,0.6)">⟨o⟩-space</text>
+      <text x="450" y="360" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="rgba(79,152,163,0.6)">ProtocolSim</text>
+      <text x="610" y="360" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="rgba(60,255,120,0.5)">NULL-EVIDENCE</text>
+      <line x1="110" y1="344" x2="110" y2="372" stroke="rgba(60,255,120,0.06)"/>
+      <line x1="230" y1="344" x2="230" y2="372" stroke="rgba(60,255,120,0.06)"/>
+      <line x1="375" y1="344" x2="375" y2="372" stroke="rgba(60,255,120,0.06)"/>
+      <line x1="530" y1="344" x2="530" y2="372" stroke="rgba(60,255,120,0.06)"/>
+      <line x1="270" y1="312" x2="270" y2="338" stroke="rgba(253,171,67,0.2)" stroke-dasharray="3 2" marker-end="url(#ao)"/>
+    </svg>
+  </div>
+
+  <div class="node-grid">
+    <div class="node-card" style="--nc-color:var(--teal)"><div class="nc-label">Module</div><div class="nc-name">AV Engine</div><div class="nc-status"><span class="nc-dot active"></span><span style="color:var(--green);font-family:var(--font-mono);font-size:10px">RUNNING</span></div></div>
+    <div class="node-card" style="--nc-color:var(--green)"><div class="nc-label">Module</div><div class="nc-name">Selfcheck Net</div><div class="nc-status"><span class="nc-dot active"></span><span style="color:var(--green);font-family:var(--font-mono);font-size:10px">ACTIVE</span></div></div>
+    <div class="node-card" style="--nc-color:var(--gold)"><div class="nc-label">Module</div><div class="nc-name">SANS/LBNP</div><div class="nc-status"><span class="nc-dot standby"></span><span style="color:var(--teal);font-family:var(--font-mono);font-size:10px">MONITOR</span></div></div>
+    <div class="node-card" style="--nc-color:var(--orange)"><div class="nc-label">Module</div><div class="nc-name">Intercycle</div><div class="nc-status"><span class="nc-dot warn"></span><span style="color:var(--orange);font-family:var(--font-mono);font-size:10px">PRE-GIT</span></div></div>
+    <div class="node-card" style="--nc-color:var(--green)"><div class="nc-label">Emission</div><div class="nc-name">FDO Layer</div><div class="nc-status"><span class="nc-dot active"></span><span style="color:var(--green);font-family:var(--font-mono);font-size:10px">EMITTING</span></div></div>
+    <div class="node-card" style="--nc-color:var(--teal)"><div class="nc-label">Security</div><div class="nc-name">Zod Guard</div><div class="nc-status"><span class="nc-dot active"></span><span style="color:var(--green);font-family:var(--font-mono);font-size:10px">OK</span></div></div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     REDLINE ENGINE
+     ════════════════════════════════════════════════════════ -->
+<section id="redline">
+  <div class="section-label">⟨o⟩ Redline Engine · Protocol O Simulator</div>
+  <div class="section-title">Redline Engine</div>
+
+  <div id="rlModeBanner" class="mode-banner" style="border-color:var(--green);background:var(--green-dim);">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <div>
+      <div id="rlModeLabel" class="mode-label" style="color:var(--green);">PUBLIC OUTPUT</div>
+      <div id="rlModeDesc" class="mode-desc">State is deterministic. O_s = 1.</div>
+    </div>
+  </div>
+
+  <div class="redline-grid">
+    <div style="display:flex;flex-direction:column;gap:var(--space-5);">
+      <!-- Pipeline -->
+      <div class="card" style="--card-accent:var(--green)">
+        <div class="card-header"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>PC2 RAIL</div>
+        <div class="pipeline">
+          <div id="pipeFiltrout" class="pipe-step done">✓ filtrout</div>
+          <span class="pipe-arrow">→</span>
+          <div id="pipeOeval" class="pipe-step done">✓ /oeval</div>
+          <span class="pipe-arrow">→</span>
+          <div id="pipeSelfcheck" class="pipe-step done">✓ /selfcheck</div>
+          <span class="pipe-arrow">→</span>
+          <div id="pipeJoje" class="pipe-step done">✓ JoJe</div>
+        </div>
+      </div>
+
+      <!-- O-Space + Gauge -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-5);">
+        <div class="card" style="--card-accent:var(--green)">
+          <div class="card-header">O-SPACE</div>
+          <div class="o-space-wrap"><canvas id="oSpaceCanvas"></canvas></div>
+        </div>
+        <div class="card" style="--card-accent:var(--green)">
+          <div class="card-header">INTEGRITY</div>
+          <div class="gauge-wrap">
+            <div class="gauge-ring">
+              <svg viewBox="0 0 120 120">
+                <circle class="gauge-bg" cx="60" cy="60" r="52"/>
+                <circle id="gaugeFill" class="gauge-fill" cx="60" cy="60" r="52" stroke-dasharray="326.7" stroke-dashoffset="0"/>
+              </svg>
+              <div class="gauge-text">
+                <span id="gaugeValue" class="gauge-value" style="color:var(--green);">100</span>
+                <span class="gauge-label">SCORE</span>
+              </div>
+            </div>
+            <div class="equation-block" id="equationBlock">O(s) = (1×1×1×1) × 1 × 1 = 1</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vector Map -->
+      <div class="card" style="--card-accent:var(--gold)">
+        <div class="card-header">VECTOR MAP</div>
+        <div class="vector-display">
+          <div class="vector-cell"><div class="vc-label">VECTOR</div><div id="vcVector" class="vc-value" style="color:var(--gold);">0x0F</div></div>
+          <div class="vector-cell"><div class="vc-label">O_s</div><div id="vcOs" class="vc-value" style="color:var(--green);">1</div></div>
+          <div class="vector-cell"><div class="vc-label">REGULARITY</div><div id="vcReg" class="vc-value" style="color:var(--green);">100</div></div>
+          <div class="vector-cell"><div class="vc-label">MATH VALID</div><div id="vcMath" class="vc-value" style="color:var(--green);">✓</div></div>
+        </div>
+      </div>
+
+      <!-- Findings -->
+      <div class="card" style="--card-accent:var(--cobra)">
+        <div class="card-header">FORENSIC FINDINGS</div>
+        <div id="findingsList" class="findings-list">
+          <div class="no-findings">⟨o⟩ No anomalies. System aligned.</div>
+        </div>
+      </div>
+
+      <!-- Legal Trace -->
+      <div class="card" style="--card-accent:var(--teal)">
+        <div class="card-header">LEGAL TRACE</div>
+        <div id="traceList" class="trace-list">
+          <div class="trace-entry immutable">[BOOT] REDLINE_ONLINE — Rail synchronized.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right column -->
+    <div style="display:flex;flex-direction:column;gap:var(--space-5);">
+      <div class="card" style="--card-accent:var(--green)">
+        <div class="card-header">PROTOCOL CHECKS</div>
+        <div class="check-list">
+          <div class="check-item active" onclick="toggleCheck('c1')" id="ci1">
+            <div><span class="check-name">Structural Integrity</span><br><span class="check-weight">s(x) · Bit 3 · W:35</span></div>
+            <div class="check-toggle on" id="ct1"></div>
+          </div>
+          <div class="check-item active" onclick="toggleCheck('c2')" id="ci2">
+            <div><span class="check-name">Internal Sequence</span><br><span class="check-weight">Logic · Bit 2 · W:35</span></div>
+            <div class="check-toggle on" id="ct2"></div>
+          </div>
+          <div class="check-item active" onclick="toggleCheck('c3')" id="ci3">
+            <div><span class="check-name">External Cross-Check</span><br><span class="check-weight">Hash · Bit 1 · W:15</span></div>
+            <div class="check-toggle on" id="ct3"></div>
+          </div>
+          <div class="check-item active" onclick="toggleCheck('c4')" id="ci4">
+            <div><span class="check-name">Regulatory Protection</span><br><span class="check-weight">GDPR · Bit 0 · W:15</span></div>
+            <div class="check-toggle on" id="ct4"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="--card-accent:var(--cobra)">
+        <div class="card-header">EXECUTE RAIL</div>
+        <div class="btn-row">
+          <button class="btn btn-green" onclick="handleRecalibrate()">⟳ Recalibrate</button>
+          <button class="btn btn-gold" onclick="handleForceAnomaly()">⚠ Anomaly</button>
+          <button class="btn btn-cobra" onclick="handleForceOFalse()">⊘ O&gt;FALSE</button>
+        </div>
+      </div>
+
+      <div class="card" style="--card-accent:var(--teal)">
+        <div class="card-header">STATE.IS_NOW()</div>
+        <div id="stateSnap" style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-muted);line-height:1.8;white-space:pre-wrap;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     RELATIONS (opos)
+     ════════════════════════════════════════════════════════ -->
+<section id="opos">
+  <div class="section-label">/depth/layers/opos · Relation Schema</div>
+  <div class="section-title">Layer Opposition Map</div>
+  <div id="relationList" class="relation-grid"></div>
+</section>
+
+</div><!-- /content -->
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <span>⟨o⟩ COBRALAYER · _Sec · STEELS · Protocol O Forensic Architecture</span>
+</footer>
+
+<!-- TICKER -->
+<div class="ticker-strip">
+  <span class="ticker-label">⟨O⟩ COBRA</span>
+  <div class="ticker-scroll">
+    <div class="ticker-inner" id="tickerInner"></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// AXIOM DATA — A1–A13 (tri-state: SAT / UNSAT / UNKNOWN)
+// ══════════════════════════════════════════════════════════
+const AXIOMS = [
+  { id:"A1", label:"AX::SILENCE", state:"SAT", evidence:{fdo:["fdo-av-cycle-001"],proto:["sim-case-001"]}, notes:"Silence detection operational in AV pipeline" },
+  { id:"A2", label:"AX::ANCHOR", state:"SAT", evidence:{fdo:["fdo-av-cycle-003"],proto:["sim-case-002"]}, notes:"Anchor points verified across selfcheck network" },
+  { id:"A3", label:"AX::IATROGEN", state:"SAT", evidence:{fdo:["fdo-sans-cycle-002"],proto:["sim-case-003"]}, notes:"Iatrogenic detection active in SANS loop" },
+  { id:"A4", label:"AX::CIRCULAR", state:"SAT", evidence:{fdo:["fdo-av-cycle-008"],proto:[]}, notes:"Circular dependency break confirmed" },
+  { id:"A5", label:"AX::MONOPOLY", state:"SAT", evidence:{fdo:["fdo-av-cycle-017"],proto:["sim-case-004"]}, notes:"Confirmed by AV cycle and simulator case" },
+  { id:"A6", label:"AX::DELEGATE", state:"UNKNOWN", evidence:{fdo:[],proto:[]}, notes:"No direct evidence yet — delegation model pending FDO ingestion" },
+  { id:"A7", label:"AX::RETRO", state:"UNSAT", evidence:{fdo:["fdo-sans-cycle-003"],proto:["sim-case-009"]}, notes:"Conflict detected between SANS output and simulator trace" },
+  { id:"A8", label:"AX::DRIFT", state:"UNKNOWN", evidence:{fdo:[],proto:[]}, notes:"Semantic drift tracker bootstrapped, awaiting first cycle" },
+  { id:"A9", label:"AX::CONSENT", state:"UNKNOWN", evidence:{fdo:[],proto:[]}, notes:"Consent verification pending intercycle store integration" },
+  { id:"A10",label:"AX::RISK", state:"UNKNOWN", evidence:{fdo:[],proto:[]}, notes:"Risk assessment layer pending — coagg/coisnt window undefined" },
+  { id:"A11",label:"AX::VOICE", state:"UNKNOWN", evidence:{fdo:[],proto:[]}, notes:"Voice authenticity check — pre-git status" },
+  { id:"A12",label:"AX::SELFCERT", state:"UNKNOWN", evidence:{fdo:[],proto:[]}, notes:"Self-certification loop — requires LOOP_CYCLE completion" },
+  { id:"A13",label:"AX::META", state:"SAT", evidence:{fdo:["fdo-av-cycle-020"],proto:["sim-case-012"]}, notes:"Meta-axiom integrity confirmed — system can reason about own axioms" },
+];
+
+// ══════════════════════════════════════════════════════════
+// RELATION DATA — /depth/layers/opos
+// ══════════════════════════════════════════════════════════
+const RELATIONS = [
+  { from:"SELFCHECK", to:"ENGINE", type:"opposes", reason:"validates runtime integrity against execution output" },
+  { from:"OPPOSITES", to:"POLICY", type:"opposes", reason:"contrastive decisional axis — balance vs. rules" },
+  { from:"AV emit", to:"FDO AV", type:"emits", reason:"AV cycle output → forensic data object" },
+  { from:"SANS emit", to:"FDO SANS", type:"emits", reason:"SANS cycle output → forensic data object" },
+  { from:"SELFCHECK", to:"AV emit", type:"gates", reason:"blocks emission if integrity check fails" },
+  { from:"POLICY", to:"AV emit", type:"gates", reason:"YAML rules gate final output mode" },
+  { from:"CONFIG", to:"ENGINE", type:"supports", reason:"env + zod schema feeds engine initialization" },
+  { from:"SHARED TRUNK", to:"AV head", type:"supports", reason:"latent representations feed task-specific head" },
+  { from:"SHARED TRUNK", to:"SANS head", type:"supports", reason:"latent representations feed task-specific head" },
+  { from:"AX::SAT", to:"AX::UNSAT", type:"opposes", reason:"epistemological opposition — verified vs. falsified" },
+  { from:"FDO Layer", to:"NULL-EVIDENCE", type:"gates", reason:"missing emission → state collapses to UNKNOWN" },
+  { from:"in-co", to:"λ_agree", type:"supports", reason:"intercycle coherence metric feeds agreement lambda" },
+];
+
+// ══════════════════════════════════════════════════════════
+// RENDER AXIOMS
+// ══════════════════════════════════════════════════════════
+function renderAxioms() {
+  const stats = { SAT: 0, UNSAT: 0, UNKNOWN: 0 };
+  AXIOMS.forEach(a => stats[a.state]++);
+
+  document.getElementById('axiomStats').innerHTML = `
+    <div class="stat-block"><span class="stat-value" style="color:var(--sat)">${stats.SAT}</span><span class="stat-label">SAT</span></div>
+    <div class="stat-block"><span class="stat-value" style="color:var(--unsat)">${stats.UNSAT}</span><span class="stat-label">UNSAT</span></div>
+    <div class="stat-block"><span class="stat-value" style="color:var(--unknown)">${stats.UNKNOWN}</span><span class="stat-label">UNKNOWN</span></div>
+    <div class="stat-block"><span class="stat-value" style="color:var(--text)">${AXIOMS.length}</span><span class="stat-label">TOTAL</span></div>
+  `;
+
+  const list = document.getElementById('axiomList');
+  list.innerHTML = AXIOMS.map((a, i) => {
+    const sc = a.state.toLowerCase();
+    const evCount = a.evidence.fdo.length + a.evidence.proto.length;
+    const fdoTags = a.evidence.fdo.map(e => `<span class="evidence-tag fdo">${e}</span>`).join('');
+    const protoTags = a.evidence.proto.map(e => `<span class="evidence-tag proto">${e}</span>`).join('');
+    return `
+      <div class="axiom-row" onclick="toggleAxiomDetail(${i})">
+        <div class="axiom-left">
+          <div class="axiom-dot ${sc}"></div>
+          <span class="axiom-id">${a.id}</span>
+          <span class="axiom-label">${a.label}</span>
+        </div>
+        <div class="axiom-right">
+          <span class="axiom-state ${sc}">${a.state}</span>
+          <span class="axiom-evidence">${evCount > 0 ? evCount + ' ev.' : ''}</span>
+        </div>
+      </div>
+      <div class="axiom-detail" id="axiomDetail${i}">
+        <div style="margin-bottom:6px;color:var(--text)">${a.notes}</div>
+        ${fdoTags || protoTags ? '<div style="margin-top:4px">'+fdoTags+protoTags+'</div>' : '<div style="color:var(--text-faint)">No evidence collected</div>'}
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleAxiomDetail(i) {
+  const el = document.getElementById('axiomDetail' + i);
+  el.classList.toggle('open');
+}
+
+// ══════════════════════════════════════════════════════════
+// RENDER RELATIONS
+// ══════════════════════════════════════════════════════════
+function renderRelations() {
+  const list = document.getElementById('relationList');
+  list.innerHTML = RELATIONS.map(r => {
+    const fromColor = r.type === 'opposes' ? 'var(--cobra-dim)' : 'var(--surface-3)';
+    const toColor = r.type === 'opposes' ? 'var(--cobra-dim)' : 'var(--surface-3)';
+    return `
+      <div class="relation-row">
+        <span class="rel-from" style="background:${fromColor};color:var(--text)">${r.from}</span>
+        <span class="rel-arrow">→</span>
+        <span class="rel-type ${r.type}">${r.type.toUpperCase()}</span>
+        <span class="rel-arrow">→</span>
+        <span class="rel-to" style="background:${toColor};color:var(--text)">${r.to}</span>
+        <span class="rel-reason">${r.reason}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+// REDLINE ENGINE — FIXED
+// ══════════════════════════════════════════════════════════
+const rlState = {
+  checks: { c1: true, c2: true, c3: true, c4: true },
+  hasAnomaly: false,
+  forceOFalse: false,
+  isAligning: false,
+};
+
+function seededRng(seed) {
+  let s = seed;
+  return () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+}
+
+const rng = seededRng(42);
+const histPoints = Array.from({length:40}).map((_,i) => {
+  const isOutlier = rng() > 0.85;
+  const radius = isOutlier ? 35 + rng()*15 : rng()*12;
+  const angle = (i/40)*2*Math.PI;
+  return { x: 50+radius*Math.cos(angle), y: 50+radius*Math.sin(angle), opacity: isOutlier?0.15:0.4 };
+});
+
+function rlCompute() {
+  const { checks: c, hasAnomaly: ha, forceOFalse: fo } = rlState;
+  const b = [c.c1?1:0, c.c2?1:0, c.c3?1:0, c.c4?1:0];
+  const vectorMap = '0x0' + ((b[0]<<3)|(b[1]<<2)|(b[2]<<1)|b[3]).toString(16).toUpperCase();
+  const logicalProduct = b[0]*b[1]*b[2]*b[3];
+  const anomalyM = ha ? 0 : 1;
+  const overrideM = fo ? 0 : 1;
+  const O_s = logicalProduct * anomalyM * overrideM;
+  const rawScore = b[0]*35 + b[1]*35 + b[2]*15 + b[3]*15;
+  const regularityScore = (ha || fo) ? 15 : rawScore;
+  const equation = `O(s) = (${b[0]}×${b[1]}×${b[2]}×${b[3]}) × ${anomalyM} × ${overrideM} = ${O_s}`;
+
+  const findings = [];
+  if (fo) findings.push('OVERRIDE: [O>FALSE] O-Gate zeroed by multiplier = 0.');
+  if (ha) findings.push('ANOMALY: Interference detected. Integrity multiplier = 0.');
+  if (!c.c1) findings.push('LOGIC_ERR (Bit 3): Structural integrity s(x) invalid.');
+  if (!c.c2) findings.push('LOGIC_ERR (Bit 2): Internal sequence fails logical operation.');
+  if (!c.c3) findings.push('SYS_ERR (Bit 1): External hash cross-match failed.');
+  if (!c.c4) findings.push('REG_ERR (Bit 0): Regulatory norm non-conformant.');
+
+  let mode;
+  if (fo) mode = { id:'FORCED_FALSE', label:'O>FALSE OVERRIDE', color:'var(--cobra)', bg:'var(--cobra-dim)' };
+  else if (ha) mode = { id:'ANOMALY', label:'CRITICAL ANOMALY', color:'var(--cobra)', bg:'var(--cobra-dim)' };
+  else if (O_s===1) mode = { id:'PUBLISH', label:'PUBLIC OUTPUT', color:'var(--green)', bg:'var(--green-dim)' };
+  else if (c.c1 && c.c2 && regularityScore>=70) mode = { id:'PREVIEW', label:'INTERNAL PREVIEW', color:'var(--gold)', bg:'var(--gold-dim)' };
+  else mode = { id:'BLOCKED', label:'BLOCKED', color:'var(--cobra)', bg:'var(--cobra-dim)' };
+
+  const offset = (100 - regularityScore) * 0.4;
+  const casePos = rlState.isAligning || O_s===1 ? {x:50,y:50} : {x:50+offset, y:50+offset};
+
+  return { vectorMap, O_s, equation, findings, mode, regularityScore, casePos, b };
+}
+
+function rlRender() {
+  const r = rlCompute();
+
+  // Mode banner
+  const banner = document.getElementById('rlModeBanner');
+  banner.style.borderColor = r.mode.color;
+  banner.style.background = r.mode.bg;
+  document.getElementById('rlModeLabel').style.color = r.mode.color;
+  document.getElementById('rlModeLabel').textContent = r.mode.label;
+  document.getElementById('rlModeDesc').textContent = r.O_s === 1 ? 'State is deterministic. O_s = 1.' : `Mode: ${r.mode.id}. Score: ${r.regularityScore}%`;
+
+  // Gauge
+  const circ = 2 * Math.PI * 52;
+  const gf = document.getElementById('gaugeFill');
+  gf.style.strokeDashoffset = circ * (1 - r.regularityScore / 100);
+  gf.style.stroke = r.regularityScore >= 70 ? 'var(--green)' : r.regularityScore >= 40 ? 'var(--gold)' : 'var(--cobra)';
+  const gv = document.getElementById('gaugeValue');
+  gv.textContent = r.regularityScore;
+  gv.style.color = r.regularityScore >= 70 ? 'var(--green)' : r.regularityScore >= 40 ? 'var(--gold)' : 'var(--cobra)';
+
+  document.getElementById('equationBlock').textContent = r.equation;
+
+  // Vector
+  document.getElementById('vcVector').textContent = r.vectorMap;
+  document.getElementById('vcOs').textContent = r.O_s;
+  document.getElementById('vcOs').style.color = r.O_s === 1 ? 'var(--green)' : 'var(--cobra)';
+  document.getElementById('vcReg').textContent = r.regularityScore;
+  document.getElementById('vcReg').style.color = r.regularityScore >= 70 ? 'var(--green)' : 'var(--cobra)';
+  document.getElementById('vcMath').textContent = '✓';
+  document.getElementById('vcMath').style.color = 'var(--green)';
+
+  // Checks
+  ['c1','c2','c3','c4'].forEach((k,i) => {
+    const ci = document.getElementById('ci'+(i+1));
+    const ct = document.getElementById('ct'+(i+1));
+    const on = rlState.checks[k];
+    ci.className = 'check-item ' + (on ? 'active' : 'inactive');
+    ct.className = 'check-toggle ' + (on ? 'on' : 'off');
+  });
+
+  // Findings
+  const fl = document.getElementById('findingsList');
+  fl.innerHTML = r.findings.length === 0
+    ? '<div class="no-findings">⟨o⟩ No anomalies. System aligned.</div>'
+    : r.findings.map(f => `<div class="finding">${f}</div>`).join('');
+
+  // Pipeline
+  const ps = {
+    filtrout: r.regularityScore > 0 ? 'done' : 'blocked',
+    oeval: r.regularityScore >= 70 ? 'done' : (r.regularityScore > 0 ? 'idle' : 'blocked'),
+    selfcheck: r.regularityScore >= 97 ? 'done' : (r.regularityScore >= 70 ? 'idle' : 'blocked'),
+    joje: r.O_s === 1 ? 'done' : 'blocked',
+  };
+  const icons = { done:'✓', blocked:'✗', idle:'·' };
+  const labels = { filtrout:'filtrout', oeval:'/oeval', selfcheck:'/selfcheck', joje:'JoJe' };
+  ['filtrout','oeval','selfcheck','joje'].forEach(k => {
+    const el = document.getElementById('pipe' + k.charAt(0).toUpperCase() + k.slice(1));
+    if (!el) return;
+    el.className = 'pipe-step ' + ps[k];
+    el.textContent = icons[ps[k]] + ' ' + labels[k];
+  });
+  // Fix: pipeFiltrout id
+  const pf = document.getElementById('pipeFiltrout');
+  if (pf) { pf.className = 'pipe-step ' + ps.filtrout; pf.textContent = icons[ps.filtrout] + ' filtrout'; }
+
+  // State snap
+  document.getElementById('stateSnap').textContent = JSON.stringify({
+    o_s: r.O_s, mode: r.mode.id, integrity: r.regularityScore + '%',
+    vector: r.vectorMap, timestamp: new Date().toISOString()
+  }, null, 2);
+
+  // O-Space canvas (FIXED glow code)
+  drawOSpace(r);
+}
+
+function drawOSpace(r) {
+  const canvas = document.getElementById('oSpaceCanvas');
+  if (!canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  const size = canvas.offsetWidth;
+  if (size === 0) return;
+  canvas.width = size * dpr;
+  canvas.height = size * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  const S = size;
+
+  ctx.clearRect(0,0,S,S);
+
+  // Grid rings
+  [15,25,38,50].forEach(rad => {
+    ctx.beginPath(); ctx.arc(S/2,S/2,rad/100*S,0,2*Math.PI);
+    ctx.strokeStyle = 'rgba(255,255,255,0.04)'; ctx.lineWidth = 1; ctx.stroke();
+  });
+
+  // Cross-hairs
+  ctx.strokeStyle = 'rgba(255,255,255,0.05)'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(S/2,0); ctx.lineTo(S/2,S); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0,S/2); ctx.lineTo(S,S/2); ctx.stroke();
+
+  // History points
+  histPoints.forEach(p => {
+    ctx.beginPath(); ctx.arc(p.x/100*S, p.y/100*S, 2, 0, 2*Math.PI);
+    ctx.fillStyle = `rgba(120,120,110,${p.opacity})`; ctx.fill();
+  });
+
+  // Current case — FIXED: proper hex-to-rgba conversion
+  const cx = r.casePos.x/100*S;
+  const cy = r.casePos.y/100*S;
+  const colHex = r.O_s===1 ? '#3cff78' : (r.regularityScore>=40 ? '#c3a96b' : '#e84545');
+
+  // Parse hex to RGB for proper glow
+  const hexToRgb = (hex) => {
+    const h = hex.replace('#','');
+    return [parseInt(h.substring(0,2),16), parseInt(h.substring(2,4),16), parseInt(h.substring(4,6),16)];
+  };
+  const [cr,cg,cb] = hexToRgb(colHex);
+
+  // Glow
+  const grad = ctx.createRadialGradient(cx,cy,0,cx,cy,18);
+  grad.addColorStop(0, `rgba(${cr},${cg},${cb},0.35)`);
+  grad.addColorStop(1, 'transparent');
+  ctx.beginPath(); ctx.arc(cx,cy,18,0,2*Math.PI);
+  ctx.fillStyle = grad; ctx.fill();
+
+  // Dot
+  ctx.beginPath(); ctx.arc(cx,cy,6,0,2*Math.PI);
+  ctx.fillStyle = colHex; ctx.fill();
+
+  // Center target
+  ctx.beginPath(); ctx.arc(S/2,S/2,3,0,2*Math.PI);
+  ctx.fillStyle = 'rgba(255,255,255,0.2)'; ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.arc(S/2,S/2,8,0,2*Math.PI); ctx.stroke();
+
+  // Alignment line
+  if (r.O_s !== 1) {
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(S/2,S/2);
+    ctx.strokeStyle = `rgba(${cr},${cg},${cb},0.3)`; ctx.lineWidth = 1;
+    ctx.setLineDash([4,4]); ctx.stroke(); ctx.setLineDash([]);
+  }
+}
+
+// ── REDLINE HANDLERS ──
+function toggleCheck(key) {
+  if (rlState.isAligning) return;
+  rlState.checks[key] = !rlState.checks[key];
+  addTrace(`TOGGLE: ${key.toUpperCase()} = ${rlState.checks[key]}`);
+  rlRender();
+}
+function handleRecalibrate() {
+  if (rlState.isAligning) return;
+  rlState.isAligning = true;
+  addTrace('RECALIBRATE: Aligning to fixed-point...');
+  rlRender();
+  setTimeout(() => {
+    rlState.hasAnomaly = false;
+    rlState.forceOFalse = false;
+    rlState.checks = {c1:true,c2:true,c3:true,c4:true};
+    rlState.isAligning = false;
+    addTrace('JoJeJasnElnog: INTEGRITY_FINAL — IMMUTABLE', true);
+    rlRender();
+  }, 2000);
+}
+function handleForceAnomaly() {
+  if (rlState.isAligning) return;
+  rlState.hasAnomaly = true;
+  addTrace('ANOMALY INJECTED: Interference detected.');
+  rlRender();
+}
+function handleForceOFalse() {
+  if (rlState.isAligning) return;
+  rlState.forceOFalse = true;
+  addTrace('O>FALSE OVERRIDE: O-Gate zeroed.');
+  rlRender();
+}
+function addTrace(msg, immutable=false) {
+  const el = document.getElementById('traceList');
+  const d = document.createElement('div');
+  d.className = 'trace-entry ' + (immutable ? 'immutable' : (msg.includes('ANOMALY') || msg.includes('FALSE') ? 'blocked' : ''));
+  d.textContent = '[' + new Date().toISOString().slice(11,19) + '] ' + msg;
+  el.insertBefore(d, el.firstChild);
+}
+
+// ══════════════════════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════════════════════
+function navTo(e, id) {
+  e.preventDefault();
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+}
+
+// ══════════════════════════════════════════════════════════
+// TICKER
+// ══════════════════════════════════════════════════════════
+function renderTicker() {
+  const stats = { SAT: 0, UNSAT: 0, UNKNOWN: 0 };
+  AXIOMS.forEach(a => stats[a.state]++);
+  const items = [
+    `<span class="tick-item"><span class="tick-bullet">■</span><span style="color:var(--sat)">SAT:${stats.SAT}</span></span>`,
+    `<span class="tick-item"><span class="tick-bullet">■</span><span style="color:var(--unsat)">UNSAT:${stats.UNSAT}</span></span>`,
+    `<span class="tick-item"><span class="tick-bullet">■</span><span style="color:var(--unknown)">UNK:${stats.UNKNOWN}</span></span>`,
+    `<span class="tick-item"><span class="tick-bullet">■</span><span style="color:var(--green)">AV: PUBLISH</span></span>`,
+    `<span class="tick-item"><span class="tick-bullet">■</span><span style="color:var(--green)">in-co: 0.38 stable</span></span>`,
+    `<span class="tick-item"><span class="tick-bullet">■</span><span style="color:var(--gold)">SANS ICP: 31%</span></span>`,
+    `<span class="tick-item"><span class="tick-bullet">■</span><span style="color:var(--orange)">λ_agree: 0.55</span></span>`,
+    `<span class="tick-item"><span class="tick-bullet">■</span><span style="color:var(--green)">FDO: EMITTING</span></span>`,
+    `<span class="tick-item"><span class="tick-bullet">■</span><span style="color:var(--green)">null-evidence: CLEAR</span></span>`,
+    `<span class="tick-item"><span class="tick-bullet">■</span><span style="color:var(--teal)">SELFCHECK: PASS</span></span>`,
+    `<span class="tick-item"><span class="tick-bullet">■</span><span style="color:var(--cobra)">REDLINE: ONLINE</span></span>`,
+  ];
+  // Duplicate for seamless loop
+  document.getElementById('tickerInner').innerHTML = items.join('') + items.join('');
+}
+
+// ══════════════════════════════════════════════════════════
+// TIMESTAMP
+// ══════════════════════════════════════════════════════════
+function updateTs() {
+  document.getElementById('topbarTs').textContent = new Date().toISOString().slice(0,19).replace('T',' ');
+}
+setInterval(updateTs, 1000);
+updateTs();
+
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+renderAxioms();
+renderRelations();
+renderTicker();
+rlRender();
+window.addEventListener('resize', rlRender);
+</script>
+</body>
+</html>
