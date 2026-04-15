@@ -69,7 +69,7 @@ body::after {
 }
 @keyframes scanDown { 0% { top: 0; } 100% { top: 100%; } }
 
-/* ─── ENERGY LAYER (autovisual) ─── */
+/* ─── ENERGY LAYER (autovisual — dual O) ─── */
 .energy-layer {
   position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background: url('energy.jpg') center center / cover no-repeat;
@@ -82,6 +82,20 @@ body::after {
 .energy-layer.rising { opacity: 0.10; }
 .energy-layer.deep { opacity: 0.15; }
 .energy-layer.full { opacity: 0.20; }
+
+/* Second O — generated glyph, appears deeper */
+.energy-glyph {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: url('energy-glyph.jpg') center center / contain no-repeat;
+  opacity: 0;
+  mix-blend-mode: screen;
+  transition: opacity 2s ease;
+}
+
+.energy-glyph.awake { opacity: 0.03; }
+.energy-glyph.rising { opacity: 0.06; }
+.energy-glyph.deep { opacity: 0.10; }
+.energy-glyph.full { opacity: 0.14; }
 
 /* ─── ORIGIN SYMBOL ⟨o⟩ ─── */
 .origin-glyph {
@@ -390,8 +404,9 @@ body::after {
 
 <div class="scanline"></div>
 
-<!-- ENERGY LAYER (autovisual — integrity glyph) -->
+<!-- ENERGY LAYER (autovisual — dual O) -->
 <div class="energy-layer" id="energy"></div>
+<div class="energy-glyph" id="energy-glyph"></div>
 
 <!-- DEPTH RINGS (accumulate as layers are reached) -->
 <div class="depth-ring ring-0" id="ring-0"></div>
@@ -669,6 +684,7 @@ document.querySelectorAll('.layer[data-acc]').forEach(el => accObs.observe(el));
 
 (function() {
   const energy = document.getElementById('energy');
+  const glyph = document.getElementById('energy-glyph');
   const origin = document.getElementById('origin');
   const layers = document.querySelectorAll('.layer[data-acc]');
   const rings = [0,1,2,3,4,5].map(i => document.getElementById('ring-' + i));
@@ -676,10 +692,13 @@ document.querySelectorAll('.layer[data-acc]').forEach(el => accObs.observe(el));
   let maxReached = -1;
 
   function setEnergy(level) {
-    energy.classList.remove('awake', 'rising', 'deep', 'full');
-    if (level >= 0 && level < intensities.length) {
-      energy.classList.add(intensities[level]);
-    }
+    // Drive both O layers in parallel
+    [energy, glyph].forEach(el => {
+      el.classList.remove('awake', 'rising', 'deep', 'full');
+      if (level >= 0 && level < intensities.length) {
+        el.classList.add(intensities[level]);
+      }
+    });
   }
 
   const energyObs = new IntersectionObserver(entries => {
