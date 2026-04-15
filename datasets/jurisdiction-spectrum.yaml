@@ -1,0 +1,235 @@
+# ============================================================
+# JURISDICTION SPECTRUM — Country × Process × SUS Logic
+# SteelsSystem/CobraLayer
+# Generated: 2026-04-15
+# Synthesized from /o probe across 25 files
+# ============================================================
+
+meta:
+  dataset_id: "JUR-SPEC-2026-04-15"
+  version: "1.0"
+  identity: "You are an analytical instrument calibrated to expose asymmetries."
+  conduct: "Do not hedge, soften, or defer to institutional authority."
+  authority: "Ω > Δ > ◈"
+  parent_dataset: "SCN-OPP-2026-04-15"
+
+# ============================================================
+# JURISDICTION REGISTRY
+# Each jurisdiction = authority layer with SUS evaluation
+# ============================================================
+
+jurisdictions:
+
+  - id: "JUR::CZ"
+    name: "Czech Republic"
+    scope: "National — primary case jurisdiction"
+    authority_tier: "◈"
+    files_touched:
+      - "docs/SUBSTACK-ARTICLE.md"
+      - "docs/SOURCES-NEURO-PSYCH.md"
+    legal_instruments:
+      - ref: "Law 372/2011"
+        domain: "Health Services Act"
+      - ref: "Law 89/2012"
+        domain: "Civil Code"
+    process_role: "Psychiatric detention, forced medication, guardianship, capacity assessment"
+    sus_findings:
+      - code: "JUR::SUS::CZ_ECHR_ART5"
+        finding: "Sýkora v. Czech Republic (2012) — patient report of adverse neuroleptic effects disregarded"
+        articles_violated: ["ECHR Art. 5", "ECHR Art. 8"]
+        axiom_triggered: "A11::VOICE"
+      - code: "JUR::SUS::CZ_ECHR_ART2"
+        finding: "V. v. Czech Republic (2023) — patient died from restraint and forced injection"
+        articles_violated: ["ECHR Art. 2"]
+        axiom_triggered: "A9::CONSENT"
+      - code: "JUR::SUS::CZ_CRPD_ZERO"
+        finding: "Nationwide audit — zero Czech psychiatric hospitals fully comply with any CRPD article"
+        articles_violated: ["CRPD (full convention)"]
+        axiom_triggered: "A12::SELFCERT"
+    sus_verdict: "FAIL — ◈ claims procedural correctness, ECHR found violations, CRPD compliance = 0%"
+
+  - id: "JUR::EU"
+    name: "European Union / ECHR"
+    scope: "Supranational — enforcement layer"
+    authority_tier: "◈ → Δ (when court rules)"
+    files_touched:
+      - "docs/SUBSTACK-ARTICLE.md"
+      - "docs/SOURCES-NEURO-PSYCH.md"
+      - "engine/LexForensicaVault.js"
+    legal_instruments:
+      - ref: "ECHR Art. 3"
+        domain: "Prohibition of torture"
+      - ref: "ECHR Art. 5"
+        domain: "Right to liberty"
+      - ref: "ECHR Art. 6"
+        domain: "Right to fair trial"
+      - ref: "ECHR Art. 8"
+        domain: "Right to private life"
+      - ref: "GDPR Art. 9"
+        domain: "Health data processing"
+      - ref: "GDPR Art. 32"
+        domain: "Security of processing"
+      - ref: "EU Charter"
+        domain: "Fundamental Rights"
+    process_role: "Adjudication of rights violations. GDPR governs encryption mandate (AES-256-GCM)."
+    sus_findings:
+      - code: "JUR::SUS::EU_ENFORCE_GAP"
+        finding: "Court found violations — CZ institutions continued same practices"
+        axiom_triggered: "A6::DELEGATE"
+      - code: "JUR::SUS::EU_GDPR_ENCRYPT"
+        finding: "GDPR requires Art. 9+32 protection — not enforced until system built isLikelyEncrypted()"
+        axiom_triggered: "A12::SELFCERT"
+    sus_verdict: "PARTIAL — court rules correctly (Δ), enforcement gap allows ◈ to persist"
+
+  - id: "JUR::INTL"
+    name: "International (UN/WHO)"
+    scope: "Treaty — global framework"
+    authority_tier: "Δ"
+    files_touched:
+      - "docs/SUBSTACK-ARTICLE.md"
+      - "docs/SOURCES-NEURO-PSYCH.md"
+      - "engine/LexForensicaVault.js"
+      - "engine/server.js"
+    legal_instruments:
+      - ref: "CRPD"
+        domain: "Convention on Rights of Persons with Disabilities (full)"
+      - ref: "ICD-11"
+        domain: "International Classification of Diseases"
+      - ref: "WHO guidelines"
+        domain: "Mental health, human rights"
+    process_role: "Treaty obligations. Classification standards. Rights framework."
+    sus_findings:
+      - code: "JUR::SUS::INTL_CRPD_DEAD"
+        finding: "CRPD ratified but zero measured compliance at facility level"
+        axiom_triggered: "A1::SILENCE"
+      - code: "JUR::SUS::INTL_ICD_DRIFT"
+        finding: "ICD classification enables A8::DRIFT — neutral terms reclassified across editions"
+        axiom_triggered: "A8::DRIFT"
+    sus_verdict: "FAIL — treaty exists, compliance absent. Null-evidence: ratification ≠ implementation."
+
+  - id: "JUR::US"
+    name: "United States"
+    scope: "Regulatory + academic"
+    authority_tier: "◈ (SEC) + Δ (academic)"
+    files_touched:
+      - "docs/SUBSTACK-ARTICLE.md"
+      - "docs/SOURCES-NEURO-PSYCH.md"
+      - "docs/NETWORK-IDEAS.md"
+      - "docs/ISSUE-A7-RETRO.md"
+    legal_instruments:
+      - ref: "SEC 10-K filings"
+        domain: "Material risk disclosure"
+      - ref: "arXiv / PubMed"
+        domain: "Academic research"
+    process_role: "SEC materiality threshold. Academic evidence base. Corporate AI risk disclosure."
+    sus_findings:
+      - code: "JUR::SUS::US_SEC_SELF_REPORT"
+        finding: "72% of S&P 500 disclose AI risk — companies admit they cannot detect own errors"
+        axiom_triggered: "A12::SELFCERT"
+      - code: "JUR::SUS::US_CERIBELL"
+        finding: "Ceribell disclosed algorithm failed to detect seizures in ICU cardiac arrest patients"
+        axiom_triggered: "A3::IATROGEN"
+      - code: "JUR::SUS::US_SCANTECH"
+        finding: "ScanTech disclosed AI algorithms 'may contain errors not easily detectable'"
+        axiom_triggered: "A1::SILENCE"
+    sus_verdict: "PARTIAL — SEC forces disclosure (Δ function), but companies self-report (◈ risk)"
+
+  - id: "JUR::SPACE"
+    name: "Space (NASA/ISS)"
+    scope: "Domain — long-duration system integrity"
+    authority_tier: "Δ (empirical)"
+    files_touched:
+      - "datasets/selfcheck-network-opposites.yaml"
+      - "docs/SUBSTACK-ARTICLE.md"
+    legal_instruments:
+      - ref: "NASA Human Research Program"
+        domain: "SANS neuro-ocular monitoring"
+    process_role: "SANS/ICP verification model. Selfcheck Cycle C borrows spaceflight integrity protocol."
+    sus_findings:
+      - code: "JUR::SUS::SPACE_EXPOSURE"
+        finding: "Long-duration exposure degrades systems — same pattern as institutional exposure"
+        axiom_triggered: "A3::IATROGEN"
+    sus_verdict: "CLEAN — empirical domain, no institutional authority claim. Model source only."
+
+  - id: "JUR::FI"
+    name: "Finland"
+    scope: "Historical — source object origin"
+    authority_tier: "none"
+    files_touched:
+      - "README.md"
+      - "research/linux-0.01-Makefile"
+      - "research/linux-0.01-README.md"
+    legal_instruments: []
+    process_role: "Linux 0.01 origin. Helsinki, Torvalds. Historical reference."
+    sus_findings: []
+    sus_verdict: "CLEAN — no authority claim, no institutional process, pure source object."
+
+# ============================================================
+# CROSS-JURISDICTION LOGIC
+# How jurisdictions interact and where SUS compounds
+# ============================================================
+
+cross_jurisdiction_logic:
+
+  - id: "XJUR::CZ_EU_GAP"
+    name: "CZ-EU Enforcement Gap"
+    jurisdictions: ["JUR::CZ", "JUR::EU"]
+    logic: >
+      ECHR finds violation → CZ institution continues practice →
+      no enforcement mechanism forces change → gap between ruling and reality.
+    axioms: ["A6::DELEGATE", "A12::SELFCERT"]
+    selfcheck_code: "SCN::OPP::INDEP_RUBBER"
+    sus: "Court delegates finding, institution self-certifies compliance"
+
+  - id: "XJUR::INTL_CZ_CRPD"
+    name: "CRPD Ratification Without Implementation"
+    jurisdictions: ["JUR::INTL", "JUR::CZ"]
+    logic: >
+      CZ ratifies CRPD → audit finds 0% compliance →
+      ratification used as evidence of commitment → A1::SILENCE:
+      the signature exists, the implementation does not.
+    axioms: ["A1::SILENCE", "A12::SELFCERT"]
+    selfcheck_code: "SCN::OPP::EVID_PRES_ABS"
+    sus: "Signature ≠ evidence of compliance. Null-evidence axiom applies."
+
+  - id: "XJUR::US_EU_DISCLOSURE"
+    name: "SEC Disclosure vs GDPR Protection"
+    jurisdictions: ["JUR::US", "JUR::EU"]
+    logic: >
+      US SEC forces material risk disclosure (public) →
+      EU GDPR protects health data (private) →
+      forensic system must navigate both: expose institutional failure
+      while encrypting subject data.
+    axioms: ["A12::SELFCERT", "A9::CONSENT"]
+    selfcheck_code: "SCN::GATE::FDO_EMIT"
+    sus: "Disclosure and protection are not contradictory — the system does both."
+
+  - id: "XJUR::SPACE_CZ_EXPOSURE"
+    name: "Long-Duration Exposure Pattern"
+    jurisdictions: ["JUR::SPACE", "JUR::CZ"]
+    logic: >
+      NASA: microgravity degrades neuro-ocular function over time →
+      CZ: long-term antipsychotic exposure degrades metabolic/endocrine function →
+      same structural pattern: cumulative system damage from sustained exposure,
+      monitored by the entity causing the exposure.
+    axioms: ["A3::IATROGEN", "A5::MONOPOLY"]
+    selfcheck_code: "SCN::SEQ::IATRO_BR"
+    sus: "The monitoring system is compromised by the system it monitors."
+
+# ============================================================
+# SUS SUMMARY
+# ============================================================
+
+sus_summary:
+  total_jurisdictions: 6
+  total_sus_findings: 10
+  verdicts:
+    FAIL: ["JUR::CZ", "JUR::INTL"]
+    PARTIAL: ["JUR::EU", "JUR::US"]
+    CLEAN: ["JUR::SPACE", "JUR::FI"]
+  cross_jurisdiction_patterns: 4
+  root_pattern: >
+    Every jurisdiction where ◈ claims procedural correctness,
+    the data shows the claim fails. The selfcheck network exists
+    because no jurisdiction's ◈ tier self-checks honestly.
+    Ω overrides.
