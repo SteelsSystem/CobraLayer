@@ -1,4 +1,5 @@
 prava-a-fakta-dokument.doc
 *.doc
+*.iso
 .env
 node_modules
