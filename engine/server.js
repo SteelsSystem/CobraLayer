@@ -53,13 +53,16 @@ app.post('/api/ai/audit', aiLimiter, async (req, res) => {
     const MAX_TEXT = 50000;
     if (text.length > MAX_TEXT) return res.status(400).json({ error: `Text překračuje limit ${MAX_TEXT} znaků.` });
     const sanitizedText = text.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
+    // BREAK FIX: Whitelist actionType
+    const VALID_ACTIONS = ['causal_gap', 'semantic_bias', 'universal'];
+    const safeAction = VALID_ACTIONS.includes(actionType) ? actionType : 'universal';
 
     // RAG Simulace: Načtení kontextu spisu (Cross-Reference Engine)
     // V plné produkci bychom zde použili vektorovou databázi. Nyní načteme metadata spisu.
     let caseContext = "";
     if (caseId) {
         const currentCase = await prisma.case.findUnique({ where: { id: caseId } });
-        if (currentCase) caseContext = `Kontext spisu: ${currentCase.title} - ${currentCase.domain}. `;
+        if (currentCase) caseContext = `Kontext spisu: ${(currentCase.title || "").replace(/[\n\r`${}]/g, "")} - ${(currentCase.domain || "").replace(/[\n\r`${}]/g, "")}. `;
     }
 
     const systemPrompt = `
@@ -99,7 +102,7 @@ PRAVIDLA:
             data: {
                 // HOLE #6 FIX: userId from header or anonymized IP hash
                 userId: req.headers['x-user-id'] || `anon_${require('crypto').createHash('sha256').update(req.ip || 'unknown').digest('hex').slice(0,12)}`,
-                action: `AI_ANALYSIS_${actionType.toUpperCase()}`,
+                action: `AI_ANALYSIS_${safeAction.toUpperCase()}`,
                 details: `Analyzováno ${text.length} znaků.`
             }
         });
