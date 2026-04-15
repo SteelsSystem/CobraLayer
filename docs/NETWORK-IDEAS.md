@@ -156,7 +156,7 @@ O-dif     = ES_after - ES_before = the exposed violations, gaps, drift
 
 O-dif is the value the system produces. If O-dif = 0, the system added nothing. If O-dif is large, the system exposed significant hidden structure.
 
-**Status:** CONCEPT — could be quantified as a metric in LOOP_CYCLE output.
+**Status:** CONCEPT — quantify as a metric in LOOP_CYCLE output.
 
 ---
 
