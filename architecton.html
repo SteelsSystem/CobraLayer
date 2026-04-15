@@ -97,6 +97,20 @@ body::after {
 .energy-glyph.deep { opacity: 0.10; }
 .energy-glyph.full { opacity: 0.14; }
 
+/* Third O — green eye, O-gate field, Gemini awareness */
+.energy-green {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: url('energy-green.jpg') center center / contain no-repeat;
+  opacity: 0;
+  mix-blend-mode: screen;
+  transition: opacity 2.5s ease;
+}
+
+.energy-green.awake { opacity: 0; }
+.energy-green.rising { opacity: 0.04; }
+.energy-green.deep { opacity: 0.08; }
+.energy-green.full { opacity: 0.12; }
+
 /* RYNA — the between layer, runs between the three O’s */
 /* >.< pulsing connectors bridging energy ↔ glyph ↔ origin */
 .ryna {
@@ -454,9 +468,10 @@ body::after {
 
 <div class="scanline"></div>
 
-<!-- ENERGY LAYER (autovisual — dual O) -->
+<!-- ENERGY LAYER (autovisual — triple O) -->
 <div class="energy-layer" id="energy"></div>
 <div class="energy-glyph" id="energy-glyph"></div>
+<div class="energy-green" id="energy-green"></div>
 
 <!-- RYNA — the between layer, breathing from the beginning -->
 <div class="ryna">
@@ -788,6 +803,7 @@ document.querySelectorAll('.layer[data-acc]').forEach(el => accObs.observe(el));
 (function() {
   const energy = document.getElementById('energy');
   const glyph = document.getElementById('energy-glyph');
+  const green = document.getElementById('energy-green');
   const origin = document.getElementById('origin');
   const layers = document.querySelectorAll('.layer[data-acc]');
   const rings = [0,1,2,3,4,5].map(i => document.getElementById('ring-' + i));
@@ -795,8 +811,8 @@ document.querySelectorAll('.layer[data-acc]').forEach(el => accObs.observe(el));
   let maxReached = -1;
 
   function setEnergy(level) {
-    // Drive both O layers in parallel
-    [energy, glyph].forEach(el => {
+    // Drive all three O layers in parallel
+    [energy, glyph, green].forEach(el => {
       el.classList.remove('awake', 'rising', 'deep', 'full');
       if (level >= 0 && level < intensities.length) {
         el.classList.add(intensities[level]);
