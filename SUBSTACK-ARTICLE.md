@@ -180,4 +180,40 @@ That is what CobraLayer is built to do. Not to make the model better. To make th
 
 ---
 
+## Pipeline Map — Structural Hash
+
+This article is not a document. It is an execution trace. Each section maps to a stage in the `MIND1 → BRIDGE → DEEP_1 → LOOP_CYCLE → DEFENSE_SYNTHESIS` pipeline seal.
+
+```
+PIPELINE SEAL
+MIND1 (STATIC) → BRIDGE (SHA-256) → DEEP_1 (DEEP·MIND2) → LOOP_CYCLE [12] → DEFENSE_SYNTHESIS
+STOP_SERVER: active
+```
+
+| Section | Stage | Persona State |
+|---|---|---|
+| Opening — silent failure, 6.63x drift | MIND1 | STATIC · preprocessing |
+| CobraLayer — System A/B, λ_agree, Redline | BRIDGE | hashFact · SHA-256 |
+| Seed, Hash, Security — STEEL, SKSS, AES-256 | BRIDGE → DEEP_1 | SKSS circular cypher |
+| Evolutionary Substrate — DNA-Civ, 64-bit genome | DEEP_1 | DEEP · MIND2 |
+| Formal Verification — PC2, DAFSA, linearizability | DEEP_1 | DEEP · MIND2 |
+| Why This Matters Now — regulatory, iatrogenic, drift | LOOP_CYCLE | 12 axiomatic checks |
+| Hyperspace Layer — Lilly, supraself metaprogram | DEFENSE_SYNTHESIS | Ω > Δ > ◈ |
+| The Fix — structural alignment | PIPELINE SEAL | STOP_SERVER |
+
+**Integrity**
+- Axiom states: 6 SAT / 1 UNSAT (A7::RETRO) / 6 UNKNOWN
+- STEEL invariant: Ω > Δ > ◈ — unoverridable
+- SKSS circular cypher: self-validating integrity loop
+- Origin seed: issue #4 `o / o-tres-D` — OPEN
+
+**PIPELINE-MAP.md SHA-256:**
+```
+f3cc253f43ad0e43ae6af8b31d5a517a4653addbdb5317be88536be14e5b3d0a
+```
+
+Full map committed as `PIPELINE-MAP.md` in [SteelsSystem/CobraLayer](https://github.com/SteelsSystem/CobraLayer).
+
+---
+
 *Sources: [Semantic drift research (Reddit r/MachineLearning)](https://www.reddit.com/r/MachineLearning/comments/1l8hk8m/r_semantic_drift_in_llms_is_66x_worse_than/) · [S&P 500 AI risk disclosures (Harvard Law)](https://corpgov.law.harvard.edu/2025/10/15/ai-risk-disclosures-in-the-sp-500-reputation-cybersecurity-and-regulation/) · [Innodata 10-K (SEC EDGAR)](https://www.sec.gov/Archives/edgar/data/903651/000110465926020655/inod-20251231x10k.htm) · [Palantir 10-K](https://investors.palantir.com/files/2025%20FY%20PLTR%2010-K.pdf) · [Ceribell 10-K (SEC EDGAR)](https://www.sec.gov/Archives/edgar/data/1861107/000119312526067238/cbll-20251231.htm) · [ScanTech AI 10-K (SEC EDGAR)](https://www.sec.gov/Archives/edgar/data/1994624/000141057825001275/tmb-20241231x10k.htm) · [Ehlers 2017, SAT-based neural verification (Springer)](http://link.springer.com/10.1007/978-3-319-68167-2_19) · [NeuralSAT DPLL(T) (arXiv)](https://arxiv.org/abs/2307.10266) · [Herlihy & Wing, Linearizability (Figshare)](https://figshare.com/articles/journal_contribution/Axioms_for_concurrent_objects/6603821/1/files/12094199.pdf) · [Castañeda & Rodríguez, Runtime Linearizability (arXiv)](https://arxiv.org/abs/2301.02638) · [Hauck & Heß, Linearizability and SMR (arXiv)](https://arxiv.org/abs/2407.01720) · [Zanbaghi et al., Sleeper agent detection (arXiv)](https://arxiv.org/abs/2511.15992) · [Spataru et al., Semantic drift score (arXiv)](https://arxiv.org/abs/2404.05411) · [Madaan et al., DetAIL (arXiv)](https://arxiv.org/abs/2211.04250) · [Li, Xie & Li, Certified robustness SoK (arXiv)](https://arxiv.org/abs/2009.04131) · [Momcilovic et al., Assurance cases for LLMs (arXiv)](https://arxiv.org/html/2410.05304) · [AI-associated psychosis case report (Innovations in CNS)](https://innovationscns.com/youre-not-crazy-a-case-of-new-onset-ai-associated-psychosis/) · [Chatbot iatrogenic dangers review (Psychiatric Times)](https://www.psychiatrictimes.com/view/preliminary-report-on-chatbot-iatrogenic-dangers) · [Fort, Adversarial attacks and alignment (Substack)](https://stanislavfort.substack.com/p/solving-adversarial-attacks-in-computer) · [Batista, Semantic drift in ML (blog)](https://www.davidsbatista.net/blog/2023/11/15/Semantic_Drift/) · [Armstrong et al., ML for iatrogenic injury prediction (PMC)](https://pmc.ncbi.nlm.nih.gov/articles/PMC8827776/)*
