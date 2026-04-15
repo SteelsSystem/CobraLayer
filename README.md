@@ -33,6 +33,8 @@ engine/               ← Backend + frontend codebase
 
 research/             ← Source objects — retrained, verified, set
   anti-LGBT-stigma-network-harms.pdf  Weaponized stigma ecosystem analysis
+  linux-0.01-Makefile     Linux 0.01 (Torvalds 1991) — single-author OS build pipeline
+  linux-0.01-README.md    Origin README — ftp.kernel.org/pub/linux/kernel/Historic/
 
 vis/                  ← Standalone visualizations
   pipeline-seal.html    Ω > Δ > ◈ pipeline seal
