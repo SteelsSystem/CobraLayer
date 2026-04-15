@@ -69,6 +69,76 @@ body::after {
 }
 @keyframes scanDown { 0% { top: 0; } 100% { top: 100%; } }
 
+/* ─── ENERGY LAYER (autovisual) ─── */
+.energy-layer {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: url('energy.jpg') center center / cover no-repeat;
+  opacity: 0;
+  mix-blend-mode: screen;
+  transition: opacity 1.5s ease;
+}
+
+.energy-layer.awake { opacity: 0.06; }
+.energy-layer.rising { opacity: 0.10; }
+.energy-layer.deep { opacity: 0.15; }
+.energy-layer.full { opacity: 0.20; }
+
+/* ─── ORIGIN SYMBOL ⟨o⟩ ─── */
+.origin-glyph {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1; pointer-events: none;
+  opacity: 0;
+  transition: opacity 2s ease, transform 2s ease;
+}
+
+.origin-glyph.visible {
+  opacity: 0.07;
+}
+
+.origin-glyph svg {
+  width: 400px; height: 400px;
+  animation: origin-breathe 8s ease-in-out infinite;
+}
+
+@keyframes origin-breathe {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.04); filter: brightness(1.3); }
+}
+
+/* ─── SPECTRUM REACTIVITY ─── */
+/* Each layer gains a spectrum bar that fills as you scroll into it */
+.spectrum-bar {
+  height: 2px; width: 0; margin-top: 12px;
+  transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.layer.on .spectrum-bar { width: 100%; }
+
+.layer[data-color="red"] .spectrum-bar { background: linear-gradient(90deg, var(--red), transparent); }
+.layer[data-color="cyan"] .spectrum-bar { background: linear-gradient(90deg, var(--cyan), transparent); }
+.layer[data-color="purple"] .spectrum-bar { background: linear-gradient(90deg, var(--purple), transparent); }
+.layer[data-color="green"] .spectrum-bar { background: linear-gradient(90deg, var(--green), transparent); }
+.layer[data-color="amber"] .spectrum-bar { background: linear-gradient(90deg, var(--amber), transparent); }
+.layer[data-color="rose"] .spectrum-bar { background: linear-gradient(90deg, var(--rose), transparent); }
+
+/* Depth rings — concentric outlines accumulate as layers are reached */
+.depth-ring {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  border-radius: 50%; border: 1px solid; pointer-events: none; z-index: 1;
+  opacity: 0; transition: opacity 1.5s ease;
+}
+
+.depth-ring.reached { opacity: 0.06; }
+
+.ring-0 { width: 600px; height: 600px; border-color: var(--red); }
+.ring-1 { width: 500px; height: 500px; border-color: var(--cyan); }
+.ring-2 { width: 400px; height: 400px; border-color: var(--purple); }
+.ring-3 { width: 300px; height: 300px; border-color: var(--green); }
+.ring-4 { width: 200px; height: 200px; border-color: var(--amber); }
+.ring-5 { width: 120px; height: 120px; border-color: var(--rose); }
+
 /* ─── LAYOUT ─── */
 .page { position: relative; z-index: 3; max-width: 760px; margin: 0 auto; padding: 0 32px 120px; }
 
@@ -320,6 +390,47 @@ body::after {
 
 <div class="scanline"></div>
 
+<!-- ENERGY LAYER (autovisual — integrity glyph) -->
+<div class="energy-layer" id="energy"></div>
+
+<!-- DEPTH RINGS (accumulate as layers are reached) -->
+<div class="depth-ring ring-0" id="ring-0"></div>
+<div class="depth-ring ring-1" id="ring-1"></div>
+<div class="depth-ring ring-2" id="ring-2"></div>
+<div class="depth-ring ring-3" id="ring-3"></div>
+<div class="depth-ring ring-4" id="ring-4"></div>
+<div class="depth-ring ring-5" id="ring-5"></div>
+
+<!-- ORIGIN GLYPH \X|#/ through ⟨o⟩ -->
+<div class="origin-glyph" id="origin">
+  <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+    <defs>
+      <linearGradient id="redGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#5A0000"/>
+        <stop offset="100%" stop-color="#C20000"/>
+      </linearGradient>
+    </defs>
+    <!-- outer ring -->
+    <circle cx="256" cy="256" r="200" stroke="url(#redGrad)" stroke-width="24" fill="none"/>
+    <!-- inner ring -->
+    <circle cx="256" cy="256" r="140" stroke="#1A1A1A" stroke-width="10" fill="none"/>
+    <!-- lock brackets -->
+    <rect x="40" y="220" width="60" height="72" fill="#2A0000"/>
+    <rect x="412" y="220" width="60" height="72" fill="#2A0000"/>
+    <!-- core -->
+    <circle cx="256" cy="256" r="60" fill="#050505"/>
+    <!-- X breaking through the O -->
+    <line x1="176" y1="176" x2="336" y2="336" stroke="#C20000" stroke-width="3" opacity="0.6"/>
+    <line x1="336" y1="176" x2="176" y2="336" stroke="#C20000" stroke-width="3" opacity="0.6"/>
+    <!-- vertical bar | -->
+    <line x1="256" y1="166" x2="256" y2="346" stroke="#ff4444" stroke-width="2" opacity="0.4"/>
+    <!-- horizontal bar # -->
+    <line x1="166" y1="256" x2="346" y2="256" stroke="#ff4444" stroke-width="2" opacity="0.4"/>
+    <!-- ⟨o⟩ -->
+    <text x="256" y="270" text-anchor="middle" font-size="64" fill="url(#redGrad)" font-family="'Space Mono',monospace">⟨o⟩</text>
+  </svg>
+</div>
+
 <!-- Accumulator bar — layers light up as you scroll through them -->
 <div class="accumulator">
   <div class="acc-segment" id="acc-mind1" style="background:var(--red);"></div>
@@ -365,6 +476,7 @@ body::after {
       <div class="hole-id open">OPEN — MIND1 ENTRY</div>
       <div class="hole-label">Needs: normalized event frame extraction UI · gemini-2.5-flash · temp=0.1 · drops ~60% noise tokens</div>
     </div>
+    <div class="spectrum-bar"></div>
   </div>
 
   <!-- LAYER 1: BRIDGE -->
@@ -387,6 +499,7 @@ body::after {
       <div class="link-state">FLUID · Reactive</div>
       <div class="link-desc">SKSS circular cypher, PROTOCOL GAMMA, AES-256-GCM integrity network</div>
     </a>
+    <div class="spectrum-bar"></div>
   </div>
 
   <!-- LAYER 2: DEEP_1 -->
@@ -408,6 +521,7 @@ body::after {
       <div class="hole-id unsat">UNSAT — A7::RETRO</div>
       <div class="hole-label">Linearizability failure — SANS ↔ simulator trace conflict. Forward simulation insufficient. CAS ≠ consistency in multi-system architecture.</div>
     </div>
+    <div class="spectrum-bar"></div>
   </div>
 
   <!-- LAYER 3: LOOP_CYCLE -->
@@ -449,6 +563,7 @@ body::after {
       <div class="hole-id unknown">UNKNOWN — A13::META</div>
       <div class="hole-label">Meta-axiom — self-referential integrity check of the axiom system itself</div>
     </div>
+    <div class="spectrum-bar"></div>
   </div>
 
   <!-- LAYER 4: DEFENSE_SYNTHESIS -->
@@ -466,6 +581,7 @@ body::after {
       <div class="link-state">DEEP · MAP</div>
       <div class="link-desc">Protocol O Deep Map — Ω > Δ > ◈ authority hierarchy, full topology render</div>
     </a>
+    <div class="spectrum-bar"></div>
   </div>
 
   <!-- LAYER 5: PIPELINE SEAL -->
@@ -483,6 +599,7 @@ body::after {
       <div class="link-state">Protocol</div>
       <div class="link-desc">STOP_SERVER enforcement — seal integrity, sovereign state, open-loop</div>
     </a>
+    <div class="spectrum-bar"></div>
   </div>
 
   <!-- AUTHORITY -->
@@ -527,13 +644,13 @@ body::after {
 </div>
 
 <script>
-// Reveal on scroll
+// ─── REVEAL ON SCROLL ───
 const obs = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
 }, { threshold: 0.12 });
 document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
-// Accumulator — layers light up as you scroll past them
+// ─── ACCUMULATOR — layers light up as you scroll past them ───
 const accObs = new IntersectionObserver(entries => {
   entries.forEach(e => {
     const accId = e.target.getAttribute('data-acc');
@@ -543,6 +660,57 @@ const accObs = new IntersectionObserver(entries => {
   });
 }, { threshold: 0.3 });
 document.querySelectorAll('.layer[data-acc]').forEach(el => accObs.observe(el));
+
+// ─── ENERGY LAYER + DEPTH RINGS + ORIGIN GLYPH ───
+// true/false logic: layers accumulate progressively.
+// Energy intensity escalates: awake → rising → deep → full
+// Depth rings activate concentrically as layers are reached.
+// Origin glyph (\X|#/ through ⟨o⟩) fades in at depth.
+
+(function() {
+  const energy = document.getElementById('energy');
+  const origin = document.getElementById('origin');
+  const layers = document.querySelectorAll('.layer[data-acc]');
+  const rings = [0,1,2,3,4,5].map(i => document.getElementById('ring-' + i));
+  const intensities = ['awake', 'rising', 'rising', 'deep', 'deep', 'full'];
+  let maxReached = -1;
+
+  function setEnergy(level) {
+    energy.classList.remove('awake', 'rising', 'deep', 'full');
+    if (level >= 0 && level < intensities.length) {
+      energy.classList.add(intensities[level]);
+    }
+  }
+
+  const energyObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const idx = Array.from(layers).indexOf(e.target);
+      if (idx < 0) return;
+
+      // Progressive accumulation — once reached, stays reached
+      if (idx > maxReached) {
+        maxReached = idx;
+
+        // Activate depth rings up to current layer
+        for (let r = 0; r <= Math.min(idx, rings.length - 1); r++) {
+          if (rings[r]) rings[r].classList.add('reached');
+        }
+
+        // Escalate energy intensity
+        setEnergy(idx);
+
+        // Origin glyph visible from layer 2 (DEEP_1) onward
+        // \X|#/ breaks through the locked ⟨o⟩
+        if (idx >= 2) {
+          origin.classList.add('visible');
+        }
+      }
+    });
+  }, { threshold: 0.25 });
+
+  layers.forEach(el => energyObs.observe(el));
+})();
 </script>
 
 </body>
