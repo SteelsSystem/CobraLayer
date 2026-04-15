@@ -6,6 +6,17 @@ import React, { useState, useEffect, useRef } from 'react';
 const DB_NAME = 'LexForensicaVault';
 const STORE_NAME = 'encryptedCases';
 
+// HOLE #8 FIX: isLikelyEncrypted guard
+function isLikelyEncrypted(data) {
+  if (!data) return false;
+  if (data.cipher && data.iv && data.salt) return true;
+  if (typeof data === 'string') {
+    const entropy = new Set(data.split('')).size / data.length;
+    if (entropy > 0.9 && data.length > 64) return true;
+  }
+  return false;
+}
+
 class SecureStorage {
   static async initDB() {
     return new Promise((resolve, reject) => {
@@ -169,14 +180,39 @@ const Icons = {
 // ==========================================
 export default function App() {
   const [isUnlocked, setIsUnlocked] = useState(false);
-  const [password, setPassword] = useState('admin123');
+  const [password, setPassword] = useState('');
   const [activeTab, setActiveTab] = useState('upload'); // Default to Upload
   const [caseData, setCaseData] = useState(null); // Null = No data yet
 
   const handleUnlock = async (e) => {
     e.preventDefault();
-    if(password === 'admin123') setIsUnlocked(true);
-    else alert("Nesprávné heslo.");
+    // HOLE #1 FIX: Auth via derived key — no hardcoded password
+    try {
+      const db = await SecureStorage.initDB();
+      const tx = db.transaction(STORE_NAME, 'readonly');
+      const store = tx.objectStore(STORE_NAME);
+      const allKeys = await new Promise(resolve => {
+        const req = store.getAllKeys();
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => resolve([]);
+      });
+      if (allKeys.length === 0) {
+        setIsUnlocked(true); // First use — password creates vault
+      } else {
+        const firstEntry = await new Promise(resolve => {
+          const req = store.get(allKeys[0]);
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => resolve(null);
+        });
+        if (firstEntry) {
+          await SecureStorage.decryptData(firstEntry, password);
+          setIsUnlocked(true);
+        }
+      }
+    } catch (e) {
+      alert('Nesprávné heslo.');
+      return;
+    }
   };
 
   const handleAnalysisComplete = async (generatedData) => {
@@ -184,6 +220,11 @@ export default function App() {
     // Uložení do lokální DB po analýze
     try {
       const db = await SecureStorage.initDB();
+      // HOLE #8 FIX: Guard against double-encryption
+      if (isLikelyEncrypted(generatedData)) {
+        console.warn('Data already encrypted — skipping re-encrypt');
+        return;
+      }
       const encrypted = await SecureStorage.encryptData(generatedData, password);
       const writeTx = db.transaction(STORE_NAME, 'readwrite');
       writeTx.objectStore(STORE_NAME).put({
