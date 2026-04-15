@@ -1,0 +1,24 @@
+{
+  "name": "lex-forensica-engine",
+  "version": "1.2.0",
+  "description": "LEX FORENSICA API — Express + Prisma + Gemini 2.5 Flash",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "install:deps": "npm install"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "cors": "^2.8.5",
+    "helmet": "^8.0.0",
+    "express-rate-limit": "^7.4.0",
+    "@prisma/client": "^6.0.0",
+    "@google/generative-ai": "^0.21.0",
+    "dotenv": "^16.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "UNLICENSED",
+  "private": true
+}
