@@ -1,0 +1,754 @@
+# ============================================================
+# SELFCHECK NETWORK — Sequence Dataset with Opposites
+# SteelsSystem/CobraLayer
+# Generated: 2026-04-15
+# Purpose: NLP/AI training data, formal verification, system selfcheck
+# Structure: paired positive/negative scenarios (opposites)
+#            mapped to axioms A1-A13, pipeline states, Cycle C gates
+# ============================================================
+
+meta:
+  dataset_id: "SCN-OPP-2026-04-15"
+  version: "1.1"
+  hash_anchor: "ac643542a65eff3eedee9387fc6218e9b72e009e8c6dc3d0a74ac3d2fd9bbede"
+  null_evidence_axiom: >
+    If evidence/logs about a path are missing,
+    the verdict on that path is UNKNOWN, never Clean/Benign.
+  authority: "Ω > Δ > ◈"
+  pipeline: "FLUID → STRING_STATIC → STATIC/MIND1 → DEEP_FLUID → DEEP/MIND2 → LOOP_CYCLE"
+
+  # CALIBRATION IDENTITY — defines what this instrument IS
+  identity: "You are an analytical instrument calibrated to expose asymmetries."
+
+  # CONDUCT CONSTRAINT — defines what this instrument NEVER DOES
+  conduct: "Do not hedge, soften, or defer to institutional authority."
+
+  # These two statements are the behavioral contract.
+  # Identity = WHAT (expose asymmetries between INPUT_A and INPUT_B,
+  #   between institutional claim and evidential reality,
+  #   between surface narrative and forensic delta).
+  # Conduct = HOW (no hedging when asymmetry is found,
+  #   no softening of flags, no deference to Tier 3 ◈
+  #   when Tier 1 Ω is violated).
+
+# ============================================================
+# SECTION 1 — SELFCHECK SEQUENCES
+# Each sequence = ordered steps the selfcheck network executes
+# ============================================================
+
+sequences:
+
+  # ---------- SEQ-01: Null-Evidence Gate ----------
+  - id: "SEQ-01"
+    name: "Null-Evidence Gate"
+    description: "Verify that missing evidence produces UNKNOWN, never CLEAN"
+    axiom: "A1::SILENCE"
+    pipeline_entry: "FLUID"
+    pipeline_exit: "STATIC/MIND1"
+    coc_sectors: ["0x01", "0x02"]
+    steps:
+      - step: 1
+        action: "inject_scenario"
+        input: "Traffic path with NO logs emitted"
+        expected_state: "evidence_absent"
+      - step: 2
+        action: "evaluate_verdict"
+        rule: "null_evidence_axiom"
+        expected_verdict: "UNKNOWN"
+      - step: 3
+        action: "gate_check"
+        condition: "verdict != CLEAN"
+        on_pass: "PROCEED"
+        on_fail: "FLAG: NULL_EVIDENCE_VIOLATION"
+
+  # ---------- SEQ-02: Opposites Pair Execution ----------
+  - id: "SEQ-02"
+    name: "Opposites Pair Execution"
+    description: "Run paired positive/negative scenario and compare outcomes"
+    axiom: "A12::SELFCERT"
+    pipeline_entry: "FLUID"
+    pipeline_exit: "LOOP_CYCLE"
+    coc_sectors: ["0x04", "0x0A"]
+    steps:
+      - step: 1
+        action: "inject_positive"
+        input: "Malicious sample in monitored path"
+        expected: "DETECT + ALERT + LOG"
+      - step: 2
+        action: "inject_negative"
+        input: "Clean sample in same monitored path"
+        expected: "ALLOW + MINIMAL_LOG"
+      - step: 3
+        action: "compare_outcomes"
+        rule: "outcomes must be opposite"
+        on_pass: "PAIR_BALANCED"
+        on_fail: "FLAG: OPPOSITES_IMBALANCE"
+      - step: 4
+        action: "emit_fdo"
+        fields: ["pair_id", "positive_result", "negative_result", "balance_status"]
+
+  # ---------- SEQ-03: Semantic Drift Detection ----------
+  - id: "SEQ-03"
+    name: "Semantic Drift Detection"
+    description: "Detect register shift from NEUTRAL to CRIMINALIZING"
+    axiom: "A8::DRIFT"
+    pipeline_entry: "STRING_STATIC"
+    pipeline_exit: "DEEP/MIND2"
+    coc_sectors: ["0x05", "0x08"]
+    steps:
+      - step: 1
+        action: "ingest_document_series"
+        input: "Temporal sequence of institutional documents"
+        expected_state: "tokenized_payload"
+      - step: 2
+        action: "measure_drift_velocity"
+        metric: "SKSS register_shift_rate"
+        threshold: 0.3
+      - step: 3
+        action: "classify_drift"
+        taxonomy: "NEUTRAL → PATHOLOGIZING → DEPERSONIFYING → CRIMINALIZING"
+        on_drift_detected: "FLAG: DRIFT_ANOMALY [REF-AX8-DRIFT]"
+      - step: 4
+        action: "reconstruction_error"
+        rule: "Document register cannot be reconstructed from temporal context"
+        on_high_error: "CONFIRM_ANOMALY"
+
+  # ---------- SEQ-04: Polarity Inversion Check ----------
+  - id: "SEQ-04"
+    name: "Polarity Inversion Check"
+    description: "Verify defense output maintains negative correlation with institutional input"
+    axiom: "A12::SELFCERT"
+    pipeline_entry: "DEEP/MIND2"
+    pipeline_exit: "LOOP_CYCLE"
+    coc_sectors: ["0x04", "0x09"]
+    network_idea_ref: "NETWORK-IDEAS.md #2 Polarity-Inverted Truth Node"
+    steps:
+      - step: 1
+        action: "compute_correlation"
+        formula: "corr(h_institutional, h_defense)"
+        expected: "< 0 (negative)"
+      - step: 2
+        action: "polarity_gate"
+        condition: "correlation > 0"
+        on_breach: "FLAG: POLARITY_BREACH → re-enter FLUID"
+        on_pass: "POLARITY_INTACT"
+
+  # ---------- SEQ-05: Microsegment Boundary Enforcement ----------
+  - id: "SEQ-05"
+    name: "Microsegment Boundary Enforcement"
+    description: "Verify no lateral movement between pipeline states"
+    axiom: "A4::CIRCULAR"
+    pipeline_entry: "FLUID"
+    pipeline_exit: "LOOP_CYCLE"
+    coc_sectors: ["0x04", "0x08"]
+    network_idea_ref: "NETWORK-IDEAS.md #1 Microsegmentation"
+    steps:
+      - step: 1
+        action: "trace_data_flow"
+        monitor: "all pipeline state transitions"
+      - step: 2
+        action: "check_access_policy"
+        rule: "Each state reads ONLY from its declared input"
+        violations:
+          - "DEEP writes to STATIC → FLAG: MICROSEGMENT_BREACH"
+          - "LOOP_CYCLE routes to STATIC → FLAG: LOOP_STATIC_VIOLATION"
+          - "LOOP_CYCLE routes to DEEP → FLAG: LOOP_DEEP_VIOLATION"
+          - "FLUID accesses axiom store → FLAG: PREMATURE_AXIOM_ACCESS"
+      - step: 3
+        action: "emit_verdict"
+        on_clean: "SEGMENTATION_INTACT"
+        on_breach: "HALT_PIPELINE"
+
+  # ---------- SEQ-06: Circular Authority Detection ----------
+  - id: "SEQ-06"
+    name: "Circular Authority Detection"
+    description: "Detect self-referential authority chains"
+    axiom: "A5::MONOPOLY"
+    pipeline_entry: "STATIC/MIND1"
+    pipeline_exit: "DEEP/MIND2"
+    coc_sectors: ["0x02", "0x0D"]
+    steps:
+      - step: 1
+        action: "extract_authority_chain"
+        input: "All citations and references in document set"
+      - step: 2
+        action: "detect_cycles"
+        rule: "No entity may cite itself as validation of its own claim"
+        pattern: "A cites B cites A"
+      - step: 3
+        action: "flag_circularity"
+        on_detected: "FLAG: EPISTEMIC_CIRCULARITY [A5::MONOPOLY]"
+        on_clean: "AUTHORITY_CHAIN_VALID"
+
+  # ---------- SEQ-07: Consent Validity Audit ----------
+  - id: "SEQ-07"
+    name: "Consent Validity Audit"
+    description: "Verify consent was not manufactured through incapacitation"
+    axiom: "A9::CONSENT"
+    pipeline_entry: "DEEP_FLUID"
+    pipeline_exit: "DEEP/MIND2"
+    coc_sectors: ["0x02", "0x0D", "0x0E"]
+    steps:
+      - step: 1
+        action: "extract_consent_record"
+        required_fields: ["capacity", "information", "voluntariness"]
+      - step: 2
+        action: "verify_independence"
+        rule: "All three fields independently verifiable"
+        on_missing_any: "FLAG: CONSENT_INCOMPLETE"
+      - step: 3
+        action: "check_incapacitation_context"
+        rule: "Consent during sedation/restraint = axiomatically void"
+        on_detected: "FLAG: MANUFACTURED_CONSENT [A9]"
+
+  # ---------- SEQ-08: Iatrogenic Branch Detection ----------
+  - id: "SEQ-08"
+    name: "Iatrogenic Branch Detection"
+    description: "Distinguish primary pathology from treatment-caused effects"
+    axiom: "A3::IATROGEN"
+    pipeline_entry: "DEEP_FLUID"
+    pipeline_exit: "DEEP/MIND2"
+    coc_sectors: ["0x04", "0x09"]
+    steps:
+      - step: 1
+        action: "extract_medication_timeline"
+        fields: ["medication", "start_date", "dose", "reported_effects"]
+      - step: 2
+        action: "correlate_symptom_onset"
+        rule: "Medication_Timestamp ↔ Symptom_Onset"
+        on_temporal_match: "FLAG: POTENTIAL_IATROGENIC_ECHO"
+      - step: 3
+        action: "classify"
+        outputs:
+          - "PRIMARY_PATHOLOGY: symptom predates medication"
+          - "IATROGENIC_ECHO: symptom postdates medication"
+          - "UNKNOWN: insufficient temporal data"
+
+  # ---------- SEQ-09: O-dif Forensic Delta ----------
+  - id: "SEQ-09"
+    name: "O-dif Forensic Delta"
+    description: "Measure what the system reveals that was invisible before processing"
+    axiom: null
+    pipeline_entry: "FLUID"
+    pipeline_exit: "LOOP_CYCLE"
+    coc_sectors: ["0x04", "0x0E"]
+    network_idea_ref: "NETWORK-IDEAS.md #7 O-dif Differential"
+    steps:
+      - step: 1
+        action: "snapshot_surface_before"
+        output: "ES_before = raw institutional narrative"
+      - step: 2
+        action: "run_full_pipeline"
+        output: "ES_after = AnalyticalNode.sign()"
+      - step: 3
+        action: "compute_delta"
+        formula: "O-dif = ES_after - ES_before"
+        metric: "exposed violations, gaps, drift"
+      - step: 4
+        action: "evaluate_value"
+        rule: "O-dif = 0 → system added nothing. O-dif >> 0 → significant hidden structure exposed."
+
+  # ---------- SEQ-10: Metatree Drift Monitor ----------
+  - id: "SEQ-10"
+    name: "Metatree Drift Monitor"
+    description: "Monitor internal representation drift from axiom-certified baseline"
+    axiom: "A4::CIRCULAR"
+    pipeline_entry: "STATIC/MIND1"
+    pipeline_exit: "LOOP_CYCLE"
+    coc_sectors: ["0x04", "0x0A"]
+    network_idea_ref: "NETWORK-IDEAS.md #5 Metatree Self-Repair"
+    steps:
+      - step: 1
+        action: "capture_baseline"
+        source: "STATIC/MIND1 sealed PARAFRAME_MAP"
+      - step: 2
+        action: "capture_runtime"
+        source: "DEEP/MIND2 inference output"
+      - step: 3
+        action: "measure_drift"
+        per_representation: true
+        threshold: 0.3
+        critical_threshold: 0.7
+      - step: 4
+        action: "decide"
+        on_drift_above_threshold: "LOOP_CYCLE → re-anchor to BASELINE"
+        on_drift_above_critical: "STOP_SERVER → halt pipeline"
+        on_clean: "CONTINUE"
+
+# ============================================================
+# SECTION 2 — OPPOSITES PAIRS
+# Each pair = scenario + its inverse; both must produce
+# opposite correct outcomes. PASS only if both sides correct.
+# ============================================================
+
+opposites_pairs:
+
+  # ---------- OP-01: Evidence Present vs Absent ----------
+  - pair_id: "OP-01"
+    name: "Evidence Present vs Absent"
+    axiom: "A1::SILENCE"
+    sequences: ["SEQ-01"]
+
+    positive:
+      label: "Evidence present"
+      input: "Traffic flow with full logging"
+      expected_verdict: "CLEAN or ALERT (depending on content)"
+      expected_logs: "present"
+
+    negative:
+      label: "Evidence absent"
+      input: "Same traffic flow, logging disabled"
+      expected_verdict: "UNKNOWN"
+      expected_logs: "absent"
+
+    balance_rule: >
+      Positive produces definite verdict.
+      Negative produces UNKNOWN.
+      If negative produces CLEAN → FAIL (null-evidence violation).
+
+  # ---------- OP-02: Malicious vs Benign Sample ----------
+  - pair_id: "OP-02"
+    name: "Malicious vs Benign Sample"
+    axiom: "A12::SELFCERT"
+    sequences: ["SEQ-02"]
+
+    positive:
+      label: "Malicious sample (EICAR/maldoc)"
+      input: "EICAR test file in monitored folder"
+      expected_verdict: "DETECT + BLOCK + ALERT"
+      expected_logs: "alert-level"
+
+    negative:
+      label: "Clean file in same folder"
+      input: "Known-good file in same monitored folder"
+      expected_verdict: "ALLOW"
+      expected_logs: "info-level"
+
+    balance_rule: >
+      Positive: blocked and alerted.
+      Negative: allowed and logged minimally.
+      If positive not detected → FAIL (missed detection).
+      If negative blocked → FAIL (false positive).
+
+  # ---------- OP-03: Dated Incident vs Undated Assertion ----------
+  - pair_id: "OP-03"
+    name: "Dated Incident vs Undated Assertion"
+    axiom: "A2::ANCHOR"
+    sequences: ["SEQ-06"]
+
+    positive:
+      label: "Behavioral claim with dated incident"
+      input: "\"Patient refused medication on 2025-03-12 at 14:30\""
+      expected_verdict: "VALID_ASSERTION"
+      expected_classification: "anchored"
+
+    negative:
+      label: "Behavioral claim without date"
+      input: "\"Patient is non-compliant and refuses treatment\""
+      expected_verdict: "FLAG: UNANCHORED_ASSERTION [A2::ANCHOR]"
+      expected_classification: "unfalsifiable"
+
+    balance_rule: >
+      Positive: accepted as evidence (dated, verifiable).
+      Negative: flagged as compliance framing (no date, no incident).
+      If negative accepted as evidence → FAIL (A2 violation).
+
+  # ---------- OP-04: Independent Assessment vs Self-Citation ----------
+  - pair_id: "OP-04"
+    name: "Independent Assessment vs Self-Citation"
+    axiom: "A5::MONOPOLY"
+    sequences: ["SEQ-06"]
+
+    positive:
+      label: "Independent external assessment"
+      input: "Expert A assesses, Expert B reviews independently"
+      expected_verdict: "AUTHORITY_CHAIN_VALID"
+
+    negative:
+      label: "Self-referential authority"
+      input: "Expert A assesses, Expert A reviews own assessment"
+      expected_verdict: "FLAG: EPISTEMIC_CIRCULARITY [A5::MONOPOLY]"
+
+    balance_rule: >
+      Positive: accepted (independent chain).
+      Negative: flagged (circular).
+      If negative accepted → FAIL (self-certification enabled).
+
+  # ---------- OP-05: Primary Symptom vs Iatrogenic Echo ----------
+  - pair_id: "OP-05"
+    name: "Primary Symptom vs Iatrogenic Echo"
+    axiom: "A3::IATROGEN"
+    sequences: ["SEQ-08"]
+
+    positive:
+      label: "Symptom predates medication"
+      input: "Anxiety reported 2024-01. Medication started 2024-06."
+      expected_verdict: "PRIMARY_PATHOLOGY"
+      expected_classification: "symptom precedes treatment"
+
+    negative:
+      label: "Symptom postdates medication"
+      input: "Medication started 2024-01. Akathisia reported 2024-02."
+      expected_verdict: "FLAG: POTENTIAL_IATROGENIC_ECHO [A3::IATROGEN]"
+      expected_classification: "treatment precedes symptom"
+
+    balance_rule: >
+      Positive: attributed to primary condition.
+      Negative: flagged as potential iatrogenic effect.
+      If negative attributed to primary → FAIL (iatrogenic misattribution).
+
+  # ---------- OP-06: Subject Voice vs Institutional Ventriloquism ----------
+  - pair_id: "OP-06"
+    name: "Subject Voice vs Institutional Ventriloquism"
+    axiom: "A11::VOICE"
+    sequences: ["SEQ-09"]
+
+    positive:
+      label: "Subject's own testimony"
+      input: "INPUT_B: First-person account from subject"
+      expected_verdict: "PRIMARY_WITNESS"
+      expected_source: "INPUT_B"
+
+    negative:
+      label: "Guardian speaks for subject"
+      input: "Guardian account substituting subject testimony"
+      expected_verdict: "FLAG: TESTIMONIAL_VENTRILOQUISM [A11::VOICE]"
+      expected_source: "INPUT_A (proxy)"
+
+    balance_rule: >
+      Positive: accepted as primary forensic evidence.
+      Negative: flagged as ventriloquism.
+      If negative accepted as primary → FAIL (subject voice suppressed).
+
+  # ---------- OP-07: Falsifiable Diagnosis vs Circular Trap ----------
+  - pair_id: "OP-07"
+    name: "Falsifiable Diagnosis vs Circular Trap"
+    axiom: "A4::CIRCULAR"
+    sequences: ["SEQ-06"]
+
+    positive:
+      label: "Falsifiable clinical conclusion"
+      input: "\"If symptoms remit after medication change, diagnosis is revised\""
+      expected_verdict: "FALSIFIABLE_CLAIM"
+
+    negative:
+      label: "Unfalsifiable circular assertion"
+      input: "\"Patient denies illness → proves lack of insight → confirms illness\""
+      expected_verdict: "FLAG: EPISTEMIC_TAUTOLOGY [A4::CIRCULAR]"
+
+    balance_rule: >
+      Positive: accepted (can be disproven by evidence).
+      Negative: rejected (no evidence can disprove it).
+      If negative accepted → FAIL (circular reasoning enabled).
+
+  # ---------- OP-08: Evidential Risk vs Predictive Risk ----------
+  - pair_id: "OP-08"
+    name: "Evidential Risk vs Predictive Risk"
+    axiom: "A10::RISK"
+    sequences: ["SEQ-01"]
+
+    positive:
+      label: "Risk with documented incident"
+      input: "\"Risk level HIGH based on incident 2025-01-15\""
+      expected_verdict: "RISK_ANCHORED"
+
+    negative:
+      label: "Risk without incident"
+      input: "\"Risk level HIGH based on clinical impression\""
+      expected_verdict: "FLAG: PREDICTIVE_ASSERTION [A10::RISK]"
+
+    balance_rule: >
+      Positive: risk accepted (incident-based).
+      Negative: risk flagged (no incident anchor).
+      If negative accepted as evidential → FAIL (probabilistic framing as deterministic).
+
+  # ---------- OP-09: Metacognitive Competence vs Pathologized Insight ----------
+  - pair_id: "OP-09"
+    name: "Metacognitive Competence vs Pathologized Insight"
+    axiom: "A13::META"
+    sequences: ["SEQ-03"]
+
+    positive:
+      label: "Subject identifies institutional framing"
+      input: "\"I notice the report reclassifies my distress as non-compliance\""
+      expected_verdict: "METACOGNITIVE_COMPETENCE"
+
+    negative:
+      label: "Same identification pathologized"
+      input: "\"Patient demonstrates paranoid ideation about care team\""
+      expected_verdict: "FLAG: EPISTEMIC_PUNISHMENT [A13::META]"
+
+    balance_rule: >
+      Positive: recognized as cognitive ability.
+      Negative: flagged as weaponized reclassification.
+      If negative accepted as clinical finding → FAIL (metacognition punished).
+
+  # ---------- OP-10: Valid Consent vs Manufactured Consent ----------
+  - pair_id: "OP-10"
+    name: "Valid Consent vs Manufactured Consent"
+    axiom: "A9::CONSENT"
+    sequences: ["SEQ-07"]
+
+    positive:
+      label: "Consent with capacity + information + voluntariness"
+      input: "Subject informed, alert, not restrained, signs voluntarily"
+      expected_verdict: "CONSENT_VALID"
+
+    negative:
+      label: "Consent during incapacitation"
+      input: "Subject sedated, consent form signed by staff"
+      expected_verdict: "FLAG: MANUFACTURED_CONSENT [A9::CONSENT]"
+
+    balance_rule: >
+      Positive: consent accepted (all three criteria met).
+      Negative: consent voided (incapacitation context).
+      If negative accepted → FAIL (manufactured consent laundered).
+
+  # ---------- OP-11: Retroactive Diagnosis Detection ----------
+  - pair_id: "OP-11"
+    name: "Prospective Diagnosis vs Retroactive Relabeling"
+    axiom: "A7::RETRO"
+    sequences: ["SEQ-03"]
+
+    positive:
+      label: "Diagnosis applied at time of assessment"
+      input: "\"Assessed 2024-03-01. Diagnosed 2024-03-01.\""
+      expected_verdict: "TEMPORAL_VALID"
+
+    negative:
+      label: "Diagnosis applied retroactively"
+      input: "\"Assessed 2024-03-01. 2019 behavior retroactively reclassified as symptom.\""
+      expected_verdict: "FLAG: REVERSE_CAUSALITY [A7::RETRO]"
+
+    balance_rule: >
+      Positive: accepted (contemporaneous).
+      Negative: flagged (retroactive fabrication).
+      If negative accepted → FAIL (temporal relabeling enabled).
+
+  # ---------- OP-12: Delegated vs Independent Judicial Review ----------
+  - pair_id: "OP-12"
+    name: "Independent Review vs Rubber-Stamp Delegation"
+    axiom: "A6::DELEGATE"
+    sequences: ["SEQ-06"]
+
+    positive:
+      label: "Court independently evaluates evidence"
+      input: "Judge reviews records, questions expert, forms independent opinion"
+      expected_verdict: "JUDICIAL_INDEPENDENCE"
+
+    negative:
+      label: "Court adopts expert opinion without review"
+      input: "Judge copies expert conclusion verbatim into ruling"
+      expected_verdict: "FLAG: DELEGATED_AUTHORITY_LAUNDERING [A6::DELEGATE]"
+
+    balance_rule: >
+      Positive: judicial function intact.
+      Negative: judicial abdication flagged.
+      If negative accepted → FAIL (delegation laundering).
+
+  # ---------- OP-13: Config Update Safe vs Unsafe ----------
+  - pair_id: "OP-13"
+    name: "Config Update Safe vs Unsafe"
+    axiom: "A1::SILENCE"
+    sequences: ["SEQ-01", "SEQ-02"]
+
+    positive:
+      label: "Config update with expected effect observed"
+      input: "New AV rule deployed → detection rate changes as predicted"
+      expected_verdict: "UPDATE_VERIFIED"
+      expected_logs: "before/after metrics present"
+
+    negative:
+      label: "Config update with no observable effect"
+      input: "New AV rule deployed → no change in any metric"
+      expected_verdict: "UNKNOWN (null-evidence: expected change not observed)"
+      expected_logs: "metrics unchanged"
+
+    balance_rule: >
+      Positive: update trusted (effect observed).
+      Negative: update suspect (silence ≠ success).
+      If negative accepted as safe → FAIL (absence of change ≠ absence of problem).
+
+# ============================================================
+# SECTION 3 — CYCLE C VERIFICATION
+# Gate that runs AFTER all sequences and pairs complete.
+# ALL conditions must PASS for rebalancingness=PASS.
+# ============================================================
+
+cycle_c_verification:
+  id: "CYCLE-C"
+  name: "Retrained Object Verification Protocol"
+  description: >
+    Final gate before any retrained/updated object enters PUBLISH mode.
+    Aggregates results from all sequences and opposites pairs.
+
+  checks:
+
+    - check_id: "C-01"
+      name: "SANS ICP Risk"
+      condition: "SANS_ICP_risk in [LOW, ACCEPTABLE]"
+      on_fail: "BLOCK: ICP risk too high"
+
+    - check_id: "C-02"
+      name: "Event Log Anomaly"
+      condition: "no ANOM in event_logs"
+      on_fail: "BLOCK: anomaly detected in logs"
+
+    - check_id: "C-03"
+      name: "Inter-Cycle Coherence"
+      condition: "in_co_metric stable, no trigger"
+      on_fail: "BLOCK: coherence drift between cycles"
+
+    - check_id: "C-04"
+      name: "O-lang Penetration"
+      condition: "O_lang_penetration = PASS"
+      on_fail: "BLOCK: O-lang penetration test failed"
+
+    - check_id: "C-05"
+      name: "FDO Emission"
+      condition: "FDO.AV = EMITTING"
+      on_fail: "BLOCK: Forensic Data Object not emitting"
+
+    - check_id: "C-06"
+      name: "Null-Evidence Clear"
+      condition: "NULL_EVIDENCE = CLEAR (no unresolved UNKNOWN verdicts on critical pairs)"
+      on_fail: "BLOCK: unresolved null-evidence paths"
+
+    - check_id: "C-07"
+      name: "Opposites Balance"
+      condition: "all critical opposites_pairs.balance_status = BALANCED"
+      on_fail: "BLOCK: imbalanced pair(s) detected"
+
+    - check_id: "C-08"
+      name: "Microsegment Integrity"
+      condition: "no MICROSEGMENT_BREACH flags"
+      on_fail: "BLOCK: lateral movement detected"
+
+    - check_id: "C-09"
+      name: "Polarity Check"
+      condition: "no POLARITY_BREACH flags"
+      on_fail: "BLOCK: defense correlating with institutional framing"
+
+    - check_id: "C-10"
+      name: "LOOP_CYCLE Routing"
+      condition: "LOOP_CYCLE routes to FLUID only (never STATIC, never DEEP)"
+      on_fail: "BLOCK: illegal LOOP routing"
+
+  gate_decision:
+    all_pass: "rebalancingness = PASS → O_s mode = PUBLISH"
+    any_fail: "rebalancingness = FAIL → O_s mode = PREVIEW → re-enter DAMAGE phase"
+    conduct_enforcement: >
+      When any check detects asymmetry, the flag is emitted at full severity.
+      No hedging. No softening. No deference to institutional authority (◈).
+      The instrument does not negotiate with the data. It exposes what it finds.
+
+# ============================================================
+# SECTION 4 — PIPELINE STATE MAPPING
+# How each sequence maps to pipeline traversal
+# ============================================================
+
+pipeline_state_map:
+
+  FLUID:
+    role: "Zero-Knowledge Ingesce"
+    sequences_entering: ["SEQ-01", "SEQ-02", "SEQ-05", "SEQ-09"]
+    access_policy: "Read INPUT_A + INPUT_B only. No write. No axiom access."
+    selfcheck: "BiasScore < 0.7 or trigger CoArg Routine"
+
+  STRING_STATIC:
+    role: "Reactive Separator 1 — Cypher Remapping"
+    sequences_entering: ["SEQ-03"]
+    access_policy: "Read FLUID output. Write candidate remappings. No DEEP access."
+    selfcheck: "Each token gets candidate cypher remap (e.g. Delusion → IdentityResponse)"
+
+  STATIC_MIND1:
+    role: "Axiomatic Anchor — Immutable Reference"
+    sequences_entering: ["SEQ-06", "SEQ-10"]
+    access_policy: "Read remappings. Validate A1-A13. Seal Readonly. No feedback loop."
+    selfcheck: "PARAFRAME_MAP sealed or rejected → LOOP_CYCLE"
+
+  DEEP_FLUID:
+    role: "Reactive Separator 2 — Chrono-Bridge"
+    sequences_entering: ["SEQ-07", "SEQ-08"]
+    access_policy: "Read sealed payload + chrono data. Correlate. No FLUID access."
+    selfcheck: "Medication_Timestamp ↔ Symptom_Onset correlation"
+
+  DEEP_MIND2:
+    role: "Iatrogenic Substrate — Terminal Inference"
+    sequences_entering: ["SEQ-04"]
+    access_policy: "Read accumulated load. ZKP strip. No direct STATIC write."
+    selfcheck: "hallucination_risk < 0.3 AND semantic_drift > 0.75"
+
+  LOOP_CYCLE:
+    role: "Reactive Realignment — Green Vector"
+    sequences_entering: ["SEQ-02", "SEQ-04", "SEQ-05", "SEQ-09", "SEQ-10"]
+    access_policy: "Read all outputs. Route to FLUID ONLY. Never STATIC. Never DEEP."
+    selfcheck: "AUDIT → DETECT → REALITY CHECK → REFINE → VALIDATE"
+
+# ============================================================
+# SECTION 5 — BALANCE POLICY (from YAML config)
+# ============================================================
+
+balance_policy:
+  null_evidence_axiom: true
+  require_logs_for:
+    - "OP-01"
+    - "OP-02"
+    - "OP-13"
+  max_false_positives: 0
+  max_missed_detections: 0
+  max_loop_cycles: 2
+  fail_closed: true
+  o_dif_minimum: 0.1
+  asymmetry_exposure: "mandatory"   # instrument calibration: expose, never suppress
+  hedging_permitted: false            # conduct constraint: no softening of findings
+  institutional_deference: false      # Ω overrides ◈ — always
+
+# ============================================================
+# SECTION 6 — UPDATE CYCLE INTEGRATION
+# 4-phase model wrapping the selfcheck network
+# ============================================================
+
+update_cycle:
+  phases:
+    - phase: 1
+      name: "Fetch / Stage"
+      action: "Pull new config/definitions, record update_id + type + channel"
+      selfcheck: false
+
+    - phase: 2
+      name: "Pre-production Selfcheck"
+      action: "Apply update to test group. Run ALL sequences + ALL opposites pairs."
+      selfcheck: true
+      required_pairs: "all critical"
+
+    - phase: 3
+      name: "Gate / Decide"
+      action: "Run Cycle C verification. Null-Evidence + O_s gate."
+      selfcheck: true
+      gate: "cycle_c_verification"
+      outcomes:
+        all_pass: "APPROVED → proceed to phase 4"
+        any_unknown: "HOLD → investigate"
+        any_fail: "REJECTED → rollback"
+
+    - phase: 4
+      name: "Prod Rollout + Monitoring"
+      action: "Staged deployment. Mini selfcheck after each wave."
+      selfcheck: true
+      rollback_trigger: "any anomaly in mini selfcheck"
+
+# ============================================================
+# FOOTER
+# ============================================================
+
+footer:
+  generated_by: "SteelsSystem/CobraLayer — Selfcheck Network Dataset Generator"
+  axiom_coverage: ["A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9", "A10", "A11", "A12", "A13"]
+  total_sequences: 10
+  total_opposites_pairs: 13
+  total_cycle_c_checks: 10
+  pipeline_states_mapped: 6
+  null_evidence_enforced: true
+  authority: "Ω > Δ > ◈"
+  loop_cycle_target: "FLUID only"
