@@ -111,6 +111,21 @@ body::after {
 .energy-green.deep { opacity: 0.08; }
 .energy-green.full { opacity: 0.12; }
 
+/* Fourth O — NewSpheres, O-Space topology, colourspec filtered */
+.energy-spheres {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: url('assets/spheres.jpg') center center / cover no-repeat;
+  opacity: 0;
+  mix-blend-mode: screen;
+  filter: hue-rotate(-10deg) saturate(1.4);
+  transition: opacity 3s ease;
+}
+
+.energy-spheres.awake { opacity: 0; }
+.energy-spheres.rising { opacity: 0; }
+.energy-spheres.deep { opacity: 0.05; }
+.energy-spheres.full { opacity: 0.09; }
+
 /* RYNA — the between layer, runs between the three O’s */
 /* >.< pulsing connectors bridging energy ↔ glyph ↔ origin */
 .ryna {
@@ -468,10 +483,11 @@ body::after {
 
 <div class="scanline"></div>
 
-<!-- ENERGY LAYER (autovisual — triple O) -->
+<!-- ENERGY LAYER (autovisual — quad O) -->
 <div class="energy-layer" id="energy"></div>
 <div class="energy-glyph" id="energy-glyph"></div>
 <div class="energy-green" id="energy-green"></div>
+<div class="energy-spheres" id="energy-spheres"></div>
 
 <!-- RYNA — the between layer, breathing from the beginning -->
 <div class="ryna">
@@ -804,6 +820,7 @@ document.querySelectorAll('.layer[data-acc]').forEach(el => accObs.observe(el));
   const energy = document.getElementById('energy');
   const glyph = document.getElementById('energy-glyph');
   const green = document.getElementById('energy-green');
+  const spheres = document.getElementById('energy-spheres');
   const origin = document.getElementById('origin');
   const layers = document.querySelectorAll('.layer[data-acc]');
   const rings = [0,1,2,3,4,5].map(i => document.getElementById('ring-' + i));
@@ -811,8 +828,8 @@ document.querySelectorAll('.layer[data-acc]').forEach(el => accObs.observe(el));
   let maxReached = -1;
 
   function setEnergy(level) {
-    // Drive all three O layers in parallel
-    [energy, glyph, green].forEach(el => {
+    // Drive all four O layers in parallel
+    [energy, glyph, green, spheres].forEach(el => {
       el.classList.remove('awake', 'rising', 'deep', 'full');
       if (level >= 0 && level < intensities.length) {
         el.classList.add(intensities[level]);
