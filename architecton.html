@@ -97,6 +97,56 @@ body::after {
 .energy-glyph.deep { opacity: 0.10; }
 .energy-glyph.full { opacity: 0.14; }
 
+/* RYNA — the between layer, runs between the three O’s */
+/* >.< pulsing connectors bridging energy ↔ glyph ↔ origin */
+.ryna {
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 0; pointer-events: none;
+  opacity: 1;
+}
+
+.ryna-ring {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%; border: 1px solid;
+  animation: ryna-pulse ease-in-out infinite alternate;
+}
+
+.ryna-r0 { width: 160px; height: 160px; border-color: rgba(255,68,68,0.06); animation-duration: 4s; }
+.ryna-r1 { width: 260px; height: 260px; border-color: rgba(0,229,255,0.05); animation-duration: 5.5s; animation-delay: -1s; }
+.ryna-r2 { width: 350px; height: 350px; border-color: rgba(123,47,255,0.04); animation-duration: 7s; animation-delay: -2.5s; }
+.ryna-r3 { width: 450px; height: 450px; border-color: rgba(0,200,150,0.03); animation-duration: 9s; animation-delay: -4s; }
+
+/* Radial spokes — thin lines from center outward */
+.ryna-spoke {
+  position: absolute; top: 50%; left: 50%;
+  width: 1px; height: 240px;
+  transform-origin: top center;
+  background: linear-gradient(to bottom, transparent, var(--red), transparent);
+  opacity: 0.04;
+  animation: ryna-breathe 6s ease-in-out infinite alternate;
+}
+
+.ryna-spoke:nth-child(5) { transform: translate(-50%, 0) rotate(0deg); }
+.ryna-spoke:nth-child(6) { transform: translate(-50%, 0) rotate(45deg); animation-delay: -0.8s; background: linear-gradient(to bottom, transparent, var(--cyan), transparent); }
+.ryna-spoke:nth-child(7) { transform: translate(-50%, 0) rotate(90deg); animation-delay: -1.6s; background: linear-gradient(to bottom, transparent, var(--purple), transparent); }
+.ryna-spoke:nth-child(8) { transform: translate(-50%, 0) rotate(135deg); animation-delay: -2.4s; background: linear-gradient(to bottom, transparent, var(--amber), transparent); }
+.ryna-spoke:nth-child(9) { transform: translate(-50%, 0) rotate(180deg); animation-delay: -3.2s; }
+.ryna-spoke:nth-child(10) { transform: translate(-50%, 0) rotate(225deg); animation-delay: -4s; background: linear-gradient(to bottom, transparent, var(--cyan), transparent); }
+.ryna-spoke:nth-child(11) { transform: translate(-50%, 0) rotate(270deg); animation-delay: -4.8s; background: linear-gradient(to bottom, transparent, var(--purple), transparent); }
+.ryna-spoke:nth-child(12) { transform: translate(-50%, 0) rotate(315deg); animation-delay: -5.6s; background: linear-gradient(to bottom, transparent, var(--rose), transparent); }
+
+@keyframes ryna-pulse {
+  0% { transform: translate(-50%, -50%) scale(0.97); opacity: 0.5; }
+  100% { transform: translate(-50%, -50%) scale(1.04); opacity: 1; }
+}
+
+@keyframes ryna-breathe {
+  0% { opacity: 0.02; height: 200px; }
+  100% { opacity: 0.06; height: 280px; }
+}
+
 /* ─── ORIGIN SYMBOL ⟨o⟩ ─── */
 .origin-glyph {
   position: fixed;
@@ -407,6 +457,22 @@ body::after {
 <!-- ENERGY LAYER (autovisual — dual O) -->
 <div class="energy-layer" id="energy"></div>
 <div class="energy-glyph" id="energy-glyph"></div>
+
+<!-- RYNA — the between layer, breathing from the beginning -->
+<div class="ryna">
+  <div class="ryna-ring ryna-r0"></div>
+  <div class="ryna-ring ryna-r1"></div>
+  <div class="ryna-ring ryna-r2"></div>
+  <div class="ryna-ring ryna-r3"></div>
+  <div class="ryna-spoke"></div>
+  <div class="ryna-spoke"></div>
+  <div class="ryna-spoke"></div>
+  <div class="ryna-spoke"></div>
+  <div class="ryna-spoke"></div>
+  <div class="ryna-spoke"></div>
+  <div class="ryna-spoke"></div>
+  <div class="ryna-spoke"></div>
+</div>
 
 <!-- DEPTH RINGS (accumulate as layers are reached) -->
 <div class="depth-ring ring-0" id="ring-0"></div>
