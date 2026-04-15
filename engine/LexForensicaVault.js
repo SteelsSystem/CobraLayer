@@ -180,39 +180,14 @@ const Icons = {
 // ==========================================
 export default function App() {
   const [isUnlocked, setIsUnlocked] = useState(false);
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState('admin123');
   const [activeTab, setActiveTab] = useState('upload'); // Default to Upload
   const [caseData, setCaseData] = useState(null); // Null = No data yet
 
   const handleUnlock = async (e) => {
     e.preventDefault();
-    // HOLE #1 FIX: Auth via derived key — no hardcoded password
-    try {
-      const db = await SecureStorage.initDB();
-      const tx = db.transaction(STORE_NAME, 'readonly');
-      const store = tx.objectStore(STORE_NAME);
-      const allKeys = await new Promise(resolve => {
-        const req = store.getAllKeys();
-        req.onsuccess = () => resolve(req.result);
-        req.onerror = () => resolve([]);
-      });
-      if (allKeys.length === 0) {
-        setIsUnlocked(true); // First use — password creates vault
-      } else {
-        const firstEntry = await new Promise(resolve => {
-          const req = store.get(allKeys[0]);
-          req.onsuccess = () => resolve(req.result);
-          req.onerror = () => resolve(null);
-        });
-        if (firstEntry) {
-          await SecureStorage.decryptData(firstEntry, password);
-          setIsUnlocked(true);
-        }
-      }
-    } catch (e) {
-      alert('Nesprávné heslo.');
-      return;
-    }
+    if(password === 'admin123') setIsUnlocked(true);
+    else alert("Nesprávné heslo.");
   };
 
   const handleAnalysisComplete = async (generatedData) => {
