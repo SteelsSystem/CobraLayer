@@ -543,7 +543,7 @@ body::after {
     <div class="scroll-hint">scroll · layers accumulate</div>
   </div>
 
-  <!-- LAYER 0: MIND1 — THE HOLE -->
+  <!-- LAYER 0: MIND1 — THE HOLE (partially filled by server.js) -->
   <div class="layer reveal" data-depth="00 · MIND1" data-color="red" data-acc="acc-mind1">
     <div class="layer-header">
       <span class="layer-badge">MIND1 · STATIC</span>
@@ -551,11 +551,16 @@ body::after {
     <div class="layer-title">The Missing Layer</div>
     <span class="spectrum-tag">CoC Spectrum: DAMAGE → detect</span>
     <div class="layer-desc">
-      <span>Živý Archiv removed.</span> MIND1 has no page. The raw signal entry point — normalized event frame extraction, <span>DualInput.tsx</span>, INPUT_A + INPUT_B parallel ingestion — exists in the codebase but not in the visual network. This hole is visible. That is the point.
+      <span>Živý Archiv removed.</span> MIND1 had no page. The raw signal entry point — normalized event frame extraction, <span>DualInput.tsx</span>, INPUT_A + INPUT_B parallel ingestion. The backend exists: <span>server.js</span> runs gemini-2.5-flash, three audit endpoints (causal_gap, semantic_bias, universal), Prisma persistence, audit log. The pipeline is executable. The visual UI remains the hole.
+    </div>
+    <div class="page-link" style="border-left-color: var(--red);">
+      <div class="link-name" style="color: var(--red);">server.js</div>
+      <div class="link-state">MIND1 BACKEND · LIVE</div>
+      <div class="link-desc">Express + Prisma + Gemini 2.5 Flash · temp=0.1 · drops ~60% noise tokens · /api/ai/audit · /api/cases/:caseId/evidence</div>
     </div>
     <div class="hole-block">
-      <div class="hole-id open">OPEN — MIND1 ENTRY</div>
-      <div class="hole-label">Needs: normalized event frame extraction UI · gemini-2.5-flash · temp=0.1 · drops ~60% noise tokens</div>
+      <div class="hole-id unknown">PARTIAL — MIND1 ENTRY</div>
+      <div class="hole-label">Backend: server.js ✔ · Still needs: normalized event frame extraction UI · DualInput visual component · INPUT_A/INPUT_B parallel display</div>
     </div>
     <div class="spectrum-bar"></div>
   </div>
@@ -727,7 +732,7 @@ body::after {
   <div class="integrity reveal">
     <div class="int-row">
       <span class="int-key">Axiom States</span>
-      <span class="int-val">6 SAT · 1 UNSAT (A7::RETRO) · 6 UNKNOWN</span>
+      <span class="int-val">6 SAT · 1 UNSAT (A7::RETRO) · 6 UNKNOWN · 1 PARTIAL (MIND1)</span>
     </div>
     <div class="int-row">
       <span class="int-key">Pipeline Map SHA-256</span>
