@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'none'; frame-src 'none'; object-src 'none';">
 <title>Architecton — Lex Forensica Pipeline Router</title>
 <style>
 /* AUTOCON: fonts embedded inline — zero external calls */
@@ -161,6 +162,21 @@ body::after {
 .energy-spheres.rising { opacity: 0; }
 .energy-spheres.deep { opacity: 0.05; }
 .energy-spheres.full { opacity: 0.09; }
+
+/* Fifth O — Origin PCB, ⟨O⟩ on circuit grid, DEEP_1 substrate */
+.energy-pcb {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: url('assets/origin-pcb.jpg') center center / cover no-repeat;
+  opacity: 0;
+  mix-blend-mode: screen;
+  filter: saturate(1.6) brightness(0.9);
+  transition: opacity 3s ease;
+}
+
+.energy-pcb.awake { opacity: 0; }
+.energy-pcb.rising { opacity: 0; }
+.energy-pcb.deep { opacity: 0.06; }
+.energy-pcb.full { opacity: 0.11; }
 
 /* RYNA — the between layer, runs between the three O’s */
 /* >.< pulsing connectors bridging energy ↔ glyph ↔ origin */
@@ -524,6 +540,7 @@ body::after {
 <div class="energy-glyph" id="energy-glyph"></div>
 <div class="energy-green" id="energy-green"></div>
 <div class="energy-spheres" id="energy-spheres"></div>
+<div class="energy-pcb" id="energy-pcb"></div>
 
 <!-- RYNA — the between layer, breathing from the beginning -->
 <div class="ryna">
@@ -857,6 +874,7 @@ document.querySelectorAll('.layer[data-acc]').forEach(el => accObs.observe(el));
   const glyph = document.getElementById('energy-glyph');
   const green = document.getElementById('energy-green');
   const spheres = document.getElementById('energy-spheres');
+  const pcb = document.getElementById('energy-pcb');
   const origin = document.getElementById('origin');
   const layers = document.querySelectorAll('.layer[data-acc]');
   const rings = [0,1,2,3,4,5].map(i => document.getElementById('ring-' + i));
@@ -865,7 +883,7 @@ document.querySelectorAll('.layer[data-acc]').forEach(el => accObs.observe(el));
 
   function setEnergy(level) {
     // Drive all four O layers in parallel
-    [energy, glyph, green, spheres].forEach(el => {
+    [energy, glyph, green, spheres, pcb].forEach(el => {
       el.classList.remove('awake', 'rising', 'deep', 'full');
       if (level >= 0 && level < intensities.length) {
         el.classList.add(intensities[level]);
