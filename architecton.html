@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Architecton — Lex Forensica Pipeline Router</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --cyan: #00e5ff;
+  --red: #ff4444;
+  --amber: #ffb300;
+  --green: #00c896;
+  --purple: #7b2fff;
+  --rose: #ff6b9d;
+  --dark: #05050f;
+  --mid: #0a0a1a;
+  --surface: #0d0d1e;
+  --text: #c8c8d8;
+  --dim: #444458;
+  --bright: #eeeef8;
+  --mono: 'Space Mono', monospace;
+  --serif: 'IM Fell English', Georgia, serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--dark);
+  color: var(--text);
+  font-family: var(--serif);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ─── LAVA (IMMUTABLE) ─── */
+.lava-wrap { position: fixed; inset: 0; z-index: 0; overflow: hidden; filter: blur(70px) contrast(1.3); opacity: .14; pointer-events: none; }
+.blob { position: absolute; border-radius: 50%; animation: float linear infinite; }
+.b1{width:500px;height:500px;background:radial-gradient(circle,#00e5ff,transparent 70%);left:3%;top:8%;animation-duration:22s;}
+.b2{width:340px;height:420px;background:radial-gradient(circle,#7b2fff,transparent 70%);left:62%;top:55%;animation-duration:30s;animation-delay:-8s;}
+.b3{width:380px;height:300px;background:radial-gradient(circle,#ff4444,transparent 70%);left:28%;top:28%;animation-duration:19s;animation-delay:-4s;}
+.b4{width:280px;height:360px;background:radial-gradient(circle,#00c896,transparent 70%);left:77%;top:3%;animation-duration:34s;animation-delay:-14s;}
+.b5{width:460px;height:240px;background:radial-gradient(circle,#00e5ff,transparent 70%);left:8%;top:72%;animation-duration:26s;animation-delay:-6s;}
+.b6{width:220px;height:440px;background:radial-gradient(circle,#ffb300,transparent 70%);left:48%;top:18%;animation-duration:38s;animation-delay:-20s;}
+.b7{width:360px;height:360px;background:radial-gradient(circle,#ff6b9d,transparent 70%);left:85%;top:82%;animation-duration:21s;animation-delay:-2s;}
+@keyframes float {
+  0%   { transform: translateY(0) translateX(0) scale(1); }
+  25%  { transform: translateY(-90px) translateX(40px) scale(1.1); }
+  50%  { transform: translateY(-50px) translateX(-30px) scale(.92); }
+  75%  { transform: translateY(-130px) translateX(15px) scale(1.15); }
+  100% { transform: translateY(0) translateX(0) scale(1); }
+}
+
+/* ─── NOISE OVERLAY ─── */
+body::after {
+  content: ''; position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+  background-size: 180px 180px; opacity: .3;
+}
+
+/* ─── SCANLINE ─── */
+.scanline {
+  position: fixed; top: 0; left: 0; width: 100%; height: 1px; z-index: 2; pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  animation: scanDown 10s linear infinite;
+}
+@keyframes scanDown { 0% { top: 0; } 100% { top: 100%; } }
+
+/* ─── LAYOUT ─── */
+.page { position: relative; z-index: 3; max-width: 760px; margin: 0 auto; padding: 0 32px 120px; }
+
+/* ─── REVEAL (scroll-triggered) ─── */
+.reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.9s ease, transform 0.9s ease; }
+.reveal.on { opacity: 1; transform: translateY(0); }
+
+/* ─── HERO ─── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  text-align: center; padding: 80px 0;
+}
+
+.hero-eyebrow {
+  font-family: var(--mono); font-size: 8px; letter-spacing: 6px;
+  color: rgba(0,229,255,0.16); text-transform: uppercase; margin-bottom: 32px;
+}
+
+.hero-title {
+  font-size: clamp(38px, 7vw, 72px); font-weight: 400; letter-spacing: 8px;
+  color: #fff; text-shadow: 0 0 80px rgba(0,229,255,0.2); margin-bottom: 10px;
+  line-height: 1.15; font-family: var(--serif); font-style: italic;
+}
+
+.hero-version {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 4px;
+  color: rgba(0,229,255,0.27); margin-bottom: 72px;
+}
+
+.hero-seal {
+  font-family: var(--mono); font-size: 10px; color: var(--dim);
+  letter-spacing: 0.05em; line-height: 2;
+}
+
+.hero-seal .hole { color: var(--red); text-decoration: line-through; opacity: 0.5; }
+.hero-seal .active { color: var(--cyan); }
+.hero-seal .arrow { color: var(--dim); }
+
+.scroll-hint {
+  margin-top: 90px; font-family: var(--mono); font-size: 8px; letter-spacing: 5px;
+  color: rgba(255,255,255,0.06); text-transform: uppercase;
+  animation: blink 2.6s ease-in-out infinite;
+}
+@keyframes blink { 0%,100% { opacity: .1; } 50% { opacity: .5; } }
+
+/* ─── LAYER SYSTEM ─── */
+/* Each layer stacks on top of the previous as you scroll.
+   Progressive depth: background layers accumulate, never disappear. */
+
+.layer {
+  position: relative;
+  margin-top: 0;
+  padding: 48px 0;
+  border-top: 1px solid rgba(255,255,255,0.03);
+}
+
+/* Accumulated depth indicators — each layer adds its ring */
+.layer::before {
+  content: attr(data-depth);
+  position: absolute; top: 48px; left: -48px;
+  font-family: var(--mono); font-size: 7px; letter-spacing: 3px;
+  color: var(--dim); writing-mode: vertical-rl; text-orientation: mixed;
+  text-transform: uppercase;
+}
+
+.layer-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
+}
+
+.layer-badge {
+  font-family: var(--mono); font-size: 8px; letter-spacing: 2px;
+  text-transform: uppercase; padding: 4px 10px; border-radius: 2px;
+  font-weight: 700;
+}
+
+.layer-title {
+  font-family: var(--serif); font-size: 22px; font-style: italic;
+  color: var(--bright); font-weight: 400;
+}
+
+.layer-desc {
+  font-size: 15px; color: var(--text); line-height: 2; margin-bottom: 16px;
+  font-style: italic; max-width: 600px;
+}
+
+.layer-desc span { font-style: normal; }
+
+/* Spectrum phases */
+.spectrum-tag {
+  font-family: var(--mono); font-size: 7px; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--dim); margin-bottom: 8px;
+  display: block;
+}
+
+/* Page links within layers */
+.page-link {
+  display: block; padding: 14px 18px; margin: 8px 0;
+  border: 1px solid rgba(255,255,255,0.04); border-left: 3px solid;
+  text-decoration: none; color: inherit;
+  transition: all 0.3s ease; background: rgba(255,255,255,0.01);
+}
+
+.page-link:hover {
+  background: rgba(255,255,255,0.03);
+  transform: translateX(4px);
+}
+
+.page-link .link-name {
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  letter-spacing: 1px; margin-bottom: 2px;
+}
+
+.page-link .link-state {
+  font-family: var(--mono); font-size: 8px; letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.page-link .link-desc {
+  font-size: 12px; color: var(--dim); margin-top: 4px;
+}
+
+/* Color per pipeline stage */
+.layer[data-color="cyan"] .layer-badge { background: rgba(0,229,255,0.08); color: var(--cyan); }
+.layer[data-color="cyan"] .page-link { border-left-color: var(--cyan); }
+.layer[data-color="cyan"] .link-name { color: var(--cyan); }
+
+.layer[data-color="purple"] .layer-badge { background: rgba(123,47,255,0.08); color: var(--purple); }
+.layer[data-color="purple"] .page-link { border-left-color: var(--purple); }
+.layer[data-color="purple"] .link-name { color: var(--purple); }
+
+.layer[data-color="green"] .layer-badge { background: rgba(0,200,150,0.08); color: var(--green); }
+.layer[data-color="green"] .page-link { border-left-color: var(--green); }
+.layer[data-color="green"] .link-name { color: var(--green); }
+
+.layer[data-color="red"] .layer-badge { background: rgba(255,68,68,0.08); color: var(--red); }
+.layer[data-color="red"] .page-link { border-left-color: var(--red); }
+.layer[data-color="red"] .link-name { color: var(--red); }
+
+.layer[data-color="amber"] .layer-badge { background: rgba(255,179,0,0.08); color: var(--amber); }
+.layer[data-color="amber"] .page-link { border-left-color: var(--amber); }
+.layer[data-color="amber"] .link-name { color: var(--amber); }
+
+.layer[data-color="rose"] .layer-badge { background: rgba(255,107,157,0.08); color: var(--rose); }
+.layer[data-color="rose"] .page-link { border-left-color: var(--rose); }
+.layer[data-color="rose"] .link-name { color: var(--rose); }
+
+/* ─── HOLES ─── */
+.hole-block {
+  padding: 12px 18px; margin: 6px 0;
+  border: 1px dashed rgba(255,68,68,0.2);
+  background: rgba(255,68,68,0.02);
+}
+
+.hole-id {
+  font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: 1px;
+}
+
+.hole-id.unsat { color: var(--red); }
+.hole-id.unknown { color: var(--amber); }
+.hole-id.open { color: var(--dim); }
+
+.hole-label {
+  font-size: 12px; color: var(--dim); margin-top: 2px;
+}
+
+/* ─── ACCUMULATOR BAR ─── */
+/* Fixed bar at bottom showing which layers have been scrolled through */
+.accumulator {
+  position: fixed; bottom: 0; left: 0; width: 100%; z-index: 100;
+  display: flex; height: 3px; pointer-events: none;
+}
+
+.acc-segment {
+  flex: 1; opacity: 0.15;
+  transition: opacity 0.6s ease;
+}
+
+.acc-segment.reached { opacity: 1; }
+
+/* ─── AUTHORITY ─── */
+.authority {
+  text-align: center; padding: 80px 0 40px;
+}
+
+.auth-chain {
+  font-family: var(--mono); font-size: clamp(28px, 5vw, 48px);
+  font-weight: 700; letter-spacing: 0.1em;
+}
+
+.auth-chain .omega { color: var(--red); }
+.auth-chain .delta { color: var(--amber); }
+.auth-chain .diamond { color: var(--cyan); }
+.auth-chain .sep { color: var(--dim); font-weight: 300; }
+
+.auth-sub {
+  font-family: var(--mono); font-size: 8px; letter-spacing: 5px;
+  color: rgba(255,255,255,0.1); text-transform: uppercase; margin-top: 12px;
+}
+
+/* ─── INTEGRITY ─── */
+.integrity {
+  border: 1px solid rgba(255,255,255,0.04); padding: 24px; margin-top: 40px;
+  background: rgba(255,255,255,0.01);
+}
+
+.int-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 0; font-family: var(--mono); font-size: 9px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.int-row:last-child { border-bottom: none; }
+.int-key { color: var(--dim); }
+.int-val { color: var(--cyan); word-break: break-all; max-width: 50%; text-align: right; }
+.int-val.red { color: var(--red); }
+
+/* ─── FOOTER ─── */
+.footer {
+  text-align: center; padding: 40px 0 24px; margin-top: 40px;
+  border-top: 1px solid rgba(255,255,255,0.03);
+}
+
+.footer a { color: var(--cyan); text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
+
+.footer-text {
+  font-family: var(--mono); font-size: 8px; letter-spacing: 3px;
+  color: rgba(255,255,255,0.08);
+}
+
+@media (max-width: 640px) {
+  .page { padding: 0 20px 80px; }
+  .layer::before { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="lava-wrap">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+  <div class="blob b4"></div>
+  <div class="blob b5"></div>
+  <div class="blob b6"></div>
+  <div class="blob b7"></div>
+</div>
+
+<div class="scanline"></div>
+
+<!-- Accumulator bar — layers light up as you scroll through them -->
+<div class="accumulator">
+  <div class="acc-segment" id="acc-mind1" style="background:var(--red);"></div>
+  <div class="acc-segment" id="acc-bridge" style="background:var(--cyan);"></div>
+  <div class="acc-segment" id="acc-deep" style="background:var(--purple);"></div>
+  <div class="acc-segment" id="acc-loop" style="background:var(--green);"></div>
+  <div class="acc-segment" id="acc-defense" style="background:var(--amber);"></div>
+  <div class="acc-segment" id="acc-seal" style="background:var(--rose);"></div>
+</div>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero reveal">
+    <div class="hero-eyebrow">Lex Forensica · Pipeline Router</div>
+    <div class="hero-title">Architecton</div>
+    <div class="hero-version">replaces Živý Archiv · holes exposed</div>
+    <div class="hero-seal">
+      <span class="hole">MIND1</span>
+      <span class="arrow"> → </span>
+      <span class="active">BRIDGE</span>
+      <span class="arrow"> → </span>
+      <span class="active">DEEP_1</span>
+      <span class="arrow"> → </span>
+      <span class="active">LOOP_CYCLE</span>
+      <span class="arrow"> → </span>
+      <span class="active">DEFENSE_SYNTHESIS</span>
+    </div>
+    <div class="scroll-hint">scroll · layers accumulate</div>
+  </div>
+
+  <!-- LAYER 0: MIND1 — THE HOLE -->
+  <div class="layer reveal" data-depth="00 · MIND1" data-color="red" data-acc="acc-mind1">
+    <div class="layer-header">
+      <span class="layer-badge">MIND1 · STATIC</span>
+    </div>
+    <div class="layer-title">The Missing Layer</div>
+    <span class="spectrum-tag">CoC Spectrum: DAMAGE → detect</span>
+    <div class="layer-desc">
+      <span>Živý Archiv removed.</span> MIND1 has no page. The raw signal entry point — normalized event frame extraction, <span>DualInput.tsx</span>, INPUT_A + INPUT_B parallel ingestion — exists in the codebase but not in the visual network. This hole is visible. That is the point.
+    </div>
+    <div class="hole-block">
+      <div class="hole-id open">OPEN — MIND1 ENTRY</div>
+      <div class="hole-label">Needs: normalized event frame extraction UI · gemini-2.5-flash · temp=0.1 · drops ~60% noise tokens</div>
+    </div>
+  </div>
+
+  <!-- LAYER 1: BRIDGE -->
+  <div class="layer reveal" data-depth="01 · BRIDGE" data-color="cyan" data-acc="acc-bridge">
+    <div class="layer-header">
+      <span class="layer-badge">BRIDGE · hashFact · SHA-256</span>
+    </div>
+    <div class="layer-title">Verification Topology</div>
+    <span class="spectrum-tag">CoC Spectrum: DAMAGE → WEIGHTS → detect + measure</span>
+    <div class="layer-desc">
+      System topology with integrity hash. <span>hashFact()</span> seals every normalized event frame from MIND1 before it crosses into DEEP_1. The structural seal is applied here. The chain of custody starts here.
+    </div>
+    <a href="introspect.html" class="page-link">
+      <div class="link-name">Introspekce</div>
+      <div class="link-state">Signal Chain</div>
+      <div class="link-desc">CobraLayer verification topology — System A/B dual pipeline, λ_agree coherence tracking</div>
+    </a>
+    <a href="semanticview.html" class="page-link">
+      <div class="link-name">Semantic View</div>
+      <div class="link-state">FLUID · Reactive</div>
+      <div class="link-desc">SKSS circular cypher, PROTOCOL GAMMA, AES-256-GCM integrity network</div>
+    </a>
+  </div>
+
+  <!-- LAYER 2: DEEP_1 -->
+  <div class="layer reveal" data-depth="02 · DEEP_1" data-color="purple" data-acc="acc-deep">
+    <div class="layer-header">
+      <span class="layer-badge">DEEP_1 · MIND2</span>
+    </div>
+    <div class="layer-title">Iatrogenic Substrate</div>
+    <span class="spectrum-tag">CoC Spectrum: OPERATION → execute</span>
+    <div class="layer-desc">
+      Deep NLP via gemini-3.1-pro-preview. <span>thinkingLevel=HIGH.</span> Accumulated load: <span>load_index = depotMonths²</span>. PC2 Logic backbone, DAFSA determinism, linearizability proofs, BinSym ISA-level verification. The evolutionary substrate evolves verification strategies under selection pressure.
+    </div>
+    <a href="ambient.html" class="page-link">
+      <div class="link-name">Ambient</div>
+      <div class="link-state">DEEP · MIND2</div>
+      <div class="link-desc">Evolutionary Substrate + Formal Verification — DNA-Civ 64-bit genome, PC2 backbone</div>
+    </a>
+    <div class="hole-block">
+      <div class="hole-id unsat">UNSAT — A7::RETRO</div>
+      <div class="hole-label">Linearizability failure — SANS ↔ simulator trace conflict. Forward simulation insufficient. CAS ≠ consistency in multi-system architecture.</div>
+    </div>
+  </div>
+
+  <!-- LAYER 3: LOOP_CYCLE -->
+  <div class="layer reveal" data-depth="03 · LOOP" data-color="green" data-acc="acc-loop">
+    <div class="layer-header">
+      <span class="layer-badge">LOOP_CYCLE · 12 checks</span>
+    </div>
+    <div class="layer-title">Reactive Realignment</div>
+    <span class="spectrum-tag">CoC Spectrum: REPAIR → ALIGN → reconstruct + cohere</span>
+    <div class="layer-desc">
+      Green vector. Axiom violation returns output to FLUID only — never STATIC or DEEP. <span>AUDIT → DETECT → REALITY CHECK → REFINE → VALIDATE.</span> Max 2 re-prompting cycles on CRITICAL. The monitoring system monitoring itself.
+    </div>
+    <a href="controlroom.html" class="page-link">
+      <div class="link-name">Control Room</div>
+      <div class="link-state">Control Room</div>
+      <div class="link-desc">Operational monitoring — A1–A13 axiomatic checks, re-runs DEEP_1 up to 2× on CRITICAL</div>
+    </a>
+    <div class="hole-block">
+      <div class="hole-id unknown">UNKNOWN — A3::IATROGEN</div>
+      <div class="hole-label">Iatrogenic detection — evidence exists (risperidone loop, Rogdaki/Radmanovic/Radha Krishnan) but not axiom-verified</div>
+    </div>
+    <div class="hole-block">
+      <div class="hole-id unknown">UNKNOWN — A5::MONOPOLY</div>
+      <div class="hole-label">Structural bias — expertNameCounts → axiomaticViolations defined but not wired</div>
+    </div>
+    <div class="hole-block">
+      <div class="hole-id unknown">UNKNOWN — A8::DRIFT</div>
+      <div class="hole-label">Semantic drift — Zanbaghi 92.5% accuracy + Spataru drift-predicts-hallucination not deployed</div>
+    </div>
+    <div class="hole-block">
+      <div class="hole-id unknown">UNKNOWN — A10::RISK</div>
+      <div class="hole-label">Risk assessment — RiskGauge.tsx exists, not connected to O-Space scoring</div>
+    </div>
+    <div class="hole-block">
+      <div class="hole-id unknown">UNKNOWN — A11::VOICE</div>
+      <div class="hole-label">Testimonial ventriloquism — Roe/Carel epistemic injustice framework not formalized</div>
+    </div>
+    <div class="hole-block">
+      <div class="hole-id unknown">UNKNOWN — A13::META</div>
+      <div class="hole-label">Meta-axiom — self-referential integrity check of the axiom system itself</div>
+    </div>
+  </div>
+
+  <!-- LAYER 4: DEFENSE_SYNTHESIS -->
+  <div class="layer reveal" data-depth="04 · DEFENSE" data-color="amber" data-acc="acc-defense">
+    <div class="layer-header">
+      <span class="layer-badge">DEFENSE_SYNTHESIS · Ω > Δ > ◈</span>
+    </div>
+    <div class="layer-title">The Layer Above</div>
+    <span class="spectrum-tag">CoC Spectrum: LIVE → readAs:follow reasoning</span>
+    <div class="layer-desc">
+      The supraself metaprogram. Cannot be overridden by any subsystem it governs. <span>Dignity > Process.</span> Lilly's biocomputer formalized as runtime constraint. The output exists in the world. Others can read it, follow the reasoning, verify the chain.
+    </div>
+    <a href="deepmap.html" class="page-link">
+      <div class="link-name">Deep Map</div>
+      <div class="link-state">DEEP · MAP</div>
+      <div class="link-desc">Protocol O Deep Map — Ω > Δ > ◈ authority hierarchy, full topology render</div>
+    </a>
+  </div>
+
+  <!-- LAYER 5: PIPELINE SEAL -->
+  <div class="layer reveal" data-depth="05 · SEAL" data-color="rose" data-acc="acc-seal">
+    <div class="layer-header">
+      <span class="layer-badge">PIPELINE SEAL · STOP_SERVER</span>
+    </div>
+    <div class="layer-title">Sovereign State</div>
+    <span class="spectrum-tag">Open-loop architecture · the concept is still live, still breathing</span>
+    <div class="layer-desc">
+      <span>STOP_SERVER: active.</span> Halts the entire pipeline if the seal is tampered. The three origin seeds remain OPEN. A closed-loop system can be gamed by satisfying its termination condition. An open-loop system with cryptographic integrity cannot be gamed — it can only be observed, and the observation is itself part of the record.
+    </div>
+    <a href="protocol-o.html" class="page-link">
+      <div class="link-name">Protocol O</div>
+      <div class="link-state">Protocol</div>
+      <div class="link-desc">STOP_SERVER enforcement — seal integrity, sovereign state, open-loop</div>
+    </a>
+  </div>
+
+  <!-- AUTHORITY -->
+  <div class="authority reveal">
+    <div class="auth-chain">
+      <span class="omega">Ω</span><span class="sep"> > </span><span class="delta">Δ</span><span class="sep"> > </span><span class="diamond">◈</span>
+    </div>
+    <div class="auth-sub">STEEL Invariant · Dignity > Process · Immutable</div>
+  </div>
+
+  <!-- INTEGRITY -->
+  <div class="integrity reveal">
+    <div class="int-row">
+      <span class="int-key">Axiom States</span>
+      <span class="int-val">6 SAT · 1 UNSAT (A7::RETRO) · 6 UNKNOWN</span>
+    </div>
+    <div class="int-row">
+      <span class="int-key">Pipeline Map SHA-256</span>
+      <span class="int-val">ac643542a65eff3eedee9387fc6218e9b72e009e8c6dc3d0a74ac3d2fd9bbede</span>
+    </div>
+    <div class="int-row">
+      <span class="int-key">STEEL</span>
+      <span class="int-val red">Ω > Δ > ◈ — unoverridable</span>
+    </div>
+    <div class="int-row">
+      <span class="int-key">Živý Archiv</span>
+      <span class="int-val red">REMOVED — 8 holes exposed</span>
+    </div>
+    <div class="int-row">
+      <span class="int-key">Spectrum</span>
+      <span class="int-val">DAMAGE → WEIGHTS → OPERATION → REPAIR → ALIGN → LIVE</span>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-text">
+      ARCHITECTON · <a href="https://github.com/SteelsSystem/CobraLayer">SteelsSystem/CobraLayer</a> · Lex Forensica
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Reveal on scroll
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// Accumulator — layers light up as you scroll past them
+const accObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    const accId = e.target.getAttribute('data-acc');
+    if (accId && e.isIntersecting) {
+      document.getElementById(accId).classList.add('reached');
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('.layer[data-acc]').forEach(el => accObs.observe(el));
+</script>
+
+</body>
+</html>

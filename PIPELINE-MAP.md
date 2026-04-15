@@ -42,13 +42,30 @@ MIND1 (STATIC) → BRIDGE (SHA-256) → DEEP_1 (DEEP·MIND2) → LOOP_CYCLE [12]
 
 ## Visual Network Alignment
 
-| Page | Persona State | Article Layer |
-|---|---|---|
-| Živý Archiv (steelssystem.github.io) | STATIC · MIND1 | Opening — raw signal |
-| Introspekce (/introspect.html) | SIGNAL CHAIN | CobraLayer — verification topology |
-| Semantic View (/semanticview.html) | FLUID · REACTIVE | Seed/Hash/Security — integrity network |
-| Ambient (/ambient.html) | DEEP · MIND2 | Evolutionary Substrate + Formal Verification |
-| Control Room (/controlroom.html) | CONTROL ROOM | Why This Matters Now — operational monitoring |
+> Živý Archiv (index.html) REMOVED — MIND1 slot freed. Holes exposed for repair.
+
+| Page | Persona State | Pipeline Stage | Covers |
+|---|---|---|---|
+| / (index.html) | **ROUTER** | — | Entry point → routes to pipeline stages. No longer Living Archive. |
+| Introspekce (/introspect.html) | SIGNAL CHAIN | BRIDGE | CobraLayer verification topology — hashFact · SHA-256 |
+| Semantic View (/semanticview.html) | FLUID · REACTIVE | BRIDGE → DEEP_1 | Seed/Hash/Security — SKSS circular cypher, integrity network |
+| Ambient (/ambient.html) | DEEP · MIND2 | DEEP_1 | Evolutionary Substrate + Formal Verification — PC2 backbone |
+| Control Room (/controlroom.html) | CONTROL ROOM | LOOP_CYCLE | Operational monitoring — 12 axiomatic checks, A1–A13 |
+| Deep Map (/deepmap.html) | DEEP · MAP | DEFENSE_SYNTHESIS | Protocol O Deep Map — Ω > Δ > ◈ authority hierarchy |
+| Protocol O (/protocol-o.html) | PROTOCOL | PIPELINE SEAL | STOP_SERVER enforcement — seal integrity |
+
+### Holes Exposed by Removing Živý Archiv
+
+| Gap | Pipeline Stage | Status | What's Missing |
+|---|---|---|---|
+| MIND1 entry | MIND1 (STATIC) | **OPEN** | No page covers raw signal preprocessing. Needs: normalized event frame extraction UI |
+| A7::RETRO | LOOP_CYCLE | **UNSAT** | Linearizability failure — SANS ↔ simulator trace conflict. See ISSUE-A7-RETRO-vs-PC2-PART-IV.md |
+| A3::IATROGEN | LOOP_CYCLE | **UNKNOWN** | Iatrogenic detection pending — evidence exists (risperidone loop, Rogdaki/Radmanovic) but not yet axiom-verified |
+| A5::MONOPOLY | LOOP_CYCLE | **UNKNOWN** | Structural bias detection — expert name count analysis not yet wired |
+| A8::DRIFT | LOOP_CYCLE | **UNKNOWN** | Semantic drift monitoring — Zanbaghi/Spataru methods exist but not deployed in pipeline |
+| A10::RISK | LOOP_CYCLE | **UNKNOWN** | Risk assessment gauge — RiskGauge.tsx exists in codebase but not connected to axiom state |
+| A11::VOICE | LOOP_CYCLE | **UNKNOWN** | Voice/testimony validation — Roe/Carel epistemic injustice framework not yet formalized |
+| A13::META | LOOP_CYCLE | **UNKNOWN** | Meta-axiom — self-referential integrity check of the axiom system itself |
 
 ---
 
