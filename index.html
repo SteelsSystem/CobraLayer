@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="CobraLayer — Lex Forensica forensic-semantic pipeline. Ω &gt; Δ &gt; ◈ authority chain. Visual surfaces and protocol maps.">
+<title>CobraLayer — Lex Forensica · Ω &gt; Δ &gt; ◈</title>
+<style>
+:root {
+  --bg: #05060a;
+  --bg-2: #07080d;
+  --surface: #0b0d12;
+  --surface-2: #10131a;
+  --surface-3: #161a22;
+  --border: rgba(255,255,255,0.045);
+  --border-mid: rgba(255,255,255,0.085);
+  --border-bright: rgba(255,255,255,0.16);
+  --text: #d6d5cc;
+  --text-muted: #6b6a60;
+  --text-faint: #393830;
+
+  --omega: #ff3b3b;
+  --delta: #e8af34;
+  --diamond: #4fb3a3;
+
+  --red: #ff3b3b;
+  --red-dim: rgba(255,59,59,0.16);
+  --red-glow: rgba(255,59,59,0.22);
+  --teal: #4fb3a3;
+  --teal-dim: rgba(79,179,163,0.18);
+  --amber: #e8af34;
+  --amber-dim: rgba(232,175,52,0.16);
+
+  --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+
+  --r-sm: 4px; --r-md: 8px; --r-lg: 12px; --r-xl: 16px;
+
+  --hex-fg: rgba(79,179,163,0.045);
+  --hex-fg-2: rgba(232,175,52,0.025);
+  --grid-fg: rgba(255,255,255,0.025);
+  --radial-pulse: 18s;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.bg-stack { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.bg-hex, .bg-grid, .bg-radial { position: absolute; inset: 0; opacity: 0; transition: opacity 1.2s ease; }
+.bg-stack.ready .bg-hex,
+.bg-stack.ready .bg-grid,
+.bg-stack.ready .bg-radial { opacity: 1; }
+
+.bg-hex {
+  background-image:
+    radial-gradient(var(--hex-fg) 1px, transparent 1px),
+    radial-gradient(var(--hex-fg-2) 1px, transparent 1px);
+  background-size: 36px 62.4px, 36px 62.4px;
+  background-position: 0 0, 18px 31.2px;
+  mix-blend-mode: screen;
+}
+.bg-grid {
+  background-image:
+    linear-gradient(var(--grid-fg) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-fg) 1px, transparent 1px);
+  background-size: 120px 120px;
+  mask-image: radial-gradient(ellipse at center, #000 35%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 35%, transparent 80%);
+}
+.bg-radial {
+  background:
+    radial-gradient(circle at 15% 18%, rgba(255,59,59,0.045), transparent 45%),
+    radial-gradient(circle at 85% 22%, rgba(232,175,52,0.04), transparent 50%),
+    radial-gradient(circle at 50% 95%, rgba(79,179,163,0.05), transparent 55%);
+  animation: radial-drift var(--radial-pulse) ease-in-out infinite alternate;
+}
+@keyframes radial-drift {
+  from { transform: translate3d(0,0,0) scale(1); }
+  to   { transform: translate3d(0,-1.5%,0) scale(1.04); }
+}
+
+.scanline {
+  position: fixed; inset: 0; pointer-events: none; z-index: 2;
+  background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(0,0,0,0.18) 3px 4px);
+  opacity: 0.32; mix-blend-mode: multiply;
+}
+
+.container {
+  position: relative;
+  z-index: 3;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(28px, 5vw, 64px) clamp(20px, 4vw, 48px) 96px;
+}
+
+header.masthead {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: clamp(24px, 4vw, 40px);
+  margin-bottom: clamp(32px, 5vw, 56px);
+}
+
+.brand-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: clamp(20px, 3vw, 32px);
+}
+.brand-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--omega);
+  box-shadow: 0 0 12px var(--red-glow);
+}
+.brand-row .sep { color: var(--text-faint); }
+
+h1.title {
+  font-family: var(--mono);
+  font-size: clamp(28px, 5vw, 52px);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin-bottom: 14px;
+}
+h1.title .glyph-omega   { color: var(--omega); }
+h1.title .glyph-delta   { color: var(--delta); }
+h1.title .glyph-diamond { color: var(--diamond); }
+h1.title .arrow         { color: var(--text-faint); margin: 0 .35ch; }
+
+.subtitle {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 22px;
+}
+
+.lede {
+  max-width: 64ch;
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.7;
+}
+.lede em { color: var(--diamond); font-style: normal; }
+.lede strong { color: var(--text); font-weight: 600; }
+
+.chain {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  margin-top: 22px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.chip {
+  padding: 6px 12px;
+  border: 1px solid var(--border-mid);
+  border-radius: var(--r-sm);
+  color: var(--text-muted);
+  background: var(--surface);
+}
+.chip.omega  { color: var(--omega);   border-color: var(--red-dim);   }
+.chip.delta  { color: var(--delta);   border-color: var(--amber-dim); }
+.chip.diamond{ color: var(--diamond); border-color: var(--teal-dim);  }
+
+section.surfaces {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: clamp(16px, 2.4vw, 24px);
+  margin-top: clamp(28px, 4vw, 44px);
+}
+
+a.card {
+  display: block;
+  position: relative;
+  padding: 26px 24px 22px;
+  background: var(--surface);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--r-lg);
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color .25s ease, transform .25s ease, background .25s ease;
+  overflow: hidden;
+}
+a.card::before {
+  content: "";
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--card-accent, var(--diamond));
+  opacity: 0.55;
+  transition: opacity .25s ease, width .25s ease;
+}
+a.card:hover, a.card:focus-visible {
+  border-color: var(--border-bright);
+  background: var(--surface-2);
+  transform: translateY(-2px);
+  outline: none;
+}
+a.card:hover::before, a.card:focus-visible::before {
+  opacity: 1;
+  width: 4px;
+}
+
+.card-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--card-accent, var(--diamond));
+  margin-bottom: 10px;
+}
+.card-title {
+  font-family: var(--mono);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+  letter-spacing: -0.005em;
+}
+.card-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+.card-path {
+  margin-top: 14px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  letter-spacing: 0.06em;
+}
+
+.card.omega   { --card-accent: var(--omega);   }
+.card.delta   { --card-accent: var(--delta);   }
+.card.diamond { --card-accent: var(--diamond); }
+
+footer.foot {
+  margin-top: clamp(48px, 7vw, 88px);
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between;
+}
+footer.foot a { color: var(--text-muted); text-decoration: none; }
+footer.foot a:hover { color: var(--text); }
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-radial { animation: none; }
+  a.card { transition: none; }
+}
+</style>
+</head>
+<body>
+<div class="bg-stack" id="bg-stack">
+  <div class="bg-hex" aria-hidden="true"></div>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-radial" aria-hidden="true"></div>
+</div>
+<div class="scanline" aria-hidden="true"></div>
+
+<main class="container">
+  <header class="masthead">
+    <div class="brand-row">
+      <span class="brand-dot" aria-hidden="true"></span>
+      <span>CobraLayer</span>
+      <span class="sep">/</span>
+      <span>Lex Forensica</span>
+      <span class="sep">/</span>
+      <span>Forensic-Semantic Pipeline</span>
+    </div>
+
+    <h1 class="title">
+      <span class="glyph-omega">Ω</span><span class="arrow">&gt;</span><span class="glyph-delta">Δ</span><span class="arrow">&gt;</span><span class="glyph-diamond">◈</span>
+    </h1>
+    <div class="subtitle">Authority · Decision · Form</div>
+
+    <p class="lede">
+      <strong>CobraLayer</strong> is the forensic-semantic substrate of the Lex Forensica stack — an
+      <em>authority &rarr; decision &rarr; form</em> pipeline that compiles legal, technical, and
+      institutional signals into auditable artefacts. The visual surfaces below expose the active
+      protocol layers and the router that binds them.
+    </p>
+
+    <div class="chain" aria-label="authority chain">
+      <span class="chip omega">Ω · Authority</span>
+      <span class="chip delta">Δ · Decision</span>
+      <span class="chip diamond">◈ · Form</span>
+    </div>
+  </header>
+
+  <section class="surfaces" aria-label="visual surfaces">
+    <a class="card omega" href="vis/pipeline-seal.html">
+      <div class="card-tag">Ω · Seal</div>
+      <div class="card-title">Pipeline Seal</div>
+      <div class="card-desc">
+        The authority seal of the forensic pipeline — axial, hexagonal, and radial geometry over
+        the Ω &gt; Δ &gt; ◈ chain. Async-rendered, reduced-motion safe.
+      </div>
+      <div class="card-path">vis/pipeline-seal.html</div>
+    </a>
+
+    <a class="card delta" href="vis/protocol-o-deep-map.html">
+      <div class="card-tag">Δ · Deep Map</div>
+      <div class="card-title">Protocol O — Deep Map</div>
+      <div class="card-desc">
+        Topology of Protocol O across decision layers — penetration, propagation, and
+        containment surfaces of the semantic field.
+      </div>
+      <div class="card-path">vis/protocol-o-deep-map.html</div>
+    </a>
+
+    <a class="card diamond" href="architecton/index.html">
+      <div class="card-tag">◈ · Router</div>
+      <div class="card-title">Architecton</div>
+      <div class="card-desc">
+        The Lex Forensica pipeline router — embedded form layer, self-contained CSP, zero
+        external dependencies.
+      </div>
+      <div class="card-path">architecton/index.html</div>
+    </a>
+  </section>
+
+  <footer class="foot">
+    <span>CobraLayer · static surfaces · no external calls</span>
+    <span><a href="https://github.com/SteelsSystem/CobraLayer">source &nearr; github</a></span>
+  </footer>
+</main>
+
+<script>
+(function () {
+  var stack = document.getElementById('bg-stack');
+  if (!stack) return;
+  var reveal = function () { stack.classList.add('ready'); };
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(reveal, { timeout: 600 });
+  } else {
+    setTimeout(reveal, 120);
+  }
+})();
+</script>
+</body>
+</html>
