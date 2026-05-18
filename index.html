@@ -361,5 +361,157 @@ footer.foot a:hover { color: var(--diamond); border-bottom-color: var(--diamond)
   }
 })();
 </script>
+<style id="lf-a11y-readability">
+/* Lex Forensica A11Y high-contrast toggle (unified across CobraLayer surfaces) */
+body { padding-bottom: max(56px, env(safe-area-inset-bottom, 0px)); }
+
+#lf-a11y-toggle{
+  position: fixed;
+  right: max(12px, env(safe-area-inset-right, 0px));
+  bottom: max(12px, env(safe-area-inset-bottom, 0px));
+  z-index: 9999;
+  display: inline-flex; align-items: center; justify-content: center;
+  white-space: nowrap; line-height: 1;
+  font: 600 10px/1 'JetBrains Mono','Space Mono',ui-monospace,monospace;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  background: rgba(6,10,16,.78); color: #d6dbe8;
+  border: 1px solid rgba(79,179,163,.55); border-radius: 999px;
+  padding: 6px 10px; min-height: 28px; cursor: pointer;
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  transition: background .2s, color .2s, border-color .2s, box-shadow .2s;
+  box-shadow: 0 2px 10px rgba(0,0,0,.45);
+  opacity: .88;
+}
+#lf-a11y-toggle:hover { opacity: 1; color: #f6faff; border-color: #6fefff; background: rgba(0,30,42,.92); }
+#lf-a11y-toggle:focus-visible {
+  opacity: 1; outline: none; color: #f6faff;
+  border-color: #6fefff;
+  box-shadow: 0 0 0 2px rgba(6,10,16,.95), 0 0 0 4px #6fefff, 0 2px 10px rgba(0,0,0,.45);
+}
+html.lf-hc #lf-a11y-toggle:focus-visible {
+  box-shadow: 0 0 0 2px #03070b, 0 0 0 4px #ff5e8a, 0 2px 10px rgba(0,0,0,.45);
+  border-color: #ff5e8a;
+}
+#lf-a11y-toggle .lf-a11y-on { display: none; }
+#lf-a11y-toggle .lf-a11y-off { display: inline; }
+html.lf-hc #lf-a11y-toggle .lf-a11y-off { display: none; }
+html.lf-hc #lf-a11y-toggle .lf-a11y-on { display: inline; }
+@media (max-width: 640px) {
+  #lf-a11y-toggle { font-size: 9px; letter-spacing: 1.2px; padding: 5px 9px; min-height: 26px; }
+  body { padding-bottom: max(48px, env(safe-area-inset-bottom, 0px)); }
+}
+@media print { #lf-a11y-toggle { display: none !important; } }
+
+/* High-contrast mode — opt-in via html.lf-hc */
+html.lf-hc body {
+  color: #f4f6ff !important;
+  cursor: default !important;
+  background: #03060b !important;
+}
+
+/* Kill decorative layers that hurt legibility */
+html.lf-hc .bg-stack,
+html.lf-hc .bg-hex,
+html.lf-hc .bg-grid,
+html.lf-hc .bg-radial,
+html.lf-hc .bg-canvas,
+html.lf-hc #bg-canvas,
+html.lf-hc .scanline,
+html.lf-hc .grain,
+html.lf-hc body::after { display: none !important; opacity: 0 !important; animation: none !important; }
+
+/* Solidify panels / cards / chips */
+html.lf-hc a.card,
+html.lf-hc .card,
+html.lf-hc .chip,
+html.lf-hc .panel,
+html.lf-hc .meta-card,
+html.lf-hc .stage-btn,
+html.lf-hc .file-panel,
+html.lf-hc .deduction-panel,
+html.lf-hc .axiom-panel,
+html.lf-hc .protocol-item,
+html.lf-hc header.masthead,
+html.lf-hc footer.foot,
+html.lf-hc [class*="-card"],
+html.lf-hc [class*="-panel"] {
+  background: #0c1018 !important;
+  border-color: #6fefff !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+/* Lift muted/faint text to legible levels */
+html.lf-hc .card-desc,
+html.lf-hc .card-path,
+html.lf-hc .card-tag,
+html.lf-hc .subtitle,
+html.lf-hc .brand-row,
+html.lf-hc .lede,
+html.lf-hc .meta,
+html.lf-hc footer.foot,
+html.lf-hc footer.foot a,
+html.lf-hc .text-muted,
+html.lf-hc .text-faint { color: #f4f6ff !important; }
+
+/* Strip text glow / shadows on titles */
+html.lf-hc h1, html.lf-hc h2, html.lf-hc h3,
+html.lf-hc h1.title,
+html.lf-hc .title { text-shadow: 0 1px 0 rgba(0,0,0,.85) !important; }
+
+/* Preserve Ω/Δ/◈ semantic colors but boost contrast */
+html.lf-hc .glyph-omega,   html.lf-hc .chip.omega,   html.lf-hc .card.omega .card-tag,   html.lf-hc .omega   { color: #ff8a8a !important; border-color: #ff8a8a !important; }
+html.lf-hc .glyph-delta,   html.lf-hc .chip.delta,   html.lf-hc .card.delta .card-tag,   html.lf-hc .delta   { color: #ffd066 !important; border-color: #ffd066 !important; }
+html.lf-hc .glyph-diamond, html.lf-hc .chip.diamond, html.lf-hc .card.diamond .card-tag, html.lf-hc .diamond { color: #4be0b8 !important; border-color: #4be0b8 !important; }
+
+/* Card accent stripe stays visible */
+html.lf-hc a.card::before { opacity: 1 !important; }
+
+/* Disable hover transforms and reveal animations in HC */
+html.lf-hc a.card:hover,
+html.lf-hc a.card:focus-visible { transform: none !important; }
+html.lf-hc .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+
+/* Link focus / hover */
+html.lf-hc a { color: #6fefff !important; }
+html.lf-hc a:hover, html.lf-hc a:focus-visible { color: #ffffff !important; border-bottom-color: #6fefff !important; }
+</style>
+<script>
+(function(){
+  var KEY='lf-a11y-hc';
+  var html=document.documentElement;
+  var stored=null;
+  try{ stored=localStorage.getItem(KEY); }catch(_){}
+  if(stored==='1') html.classList.add('lf-hc');
+  function sync(b){
+    var on=html.classList.contains('lf-hc');
+    b.setAttribute('aria-pressed', on?'true':'false');
+  }
+  function mkBtn(){
+    var existing=document.querySelectorAll('#lf-a11y-toggle');
+    for(var i=1;i<existing.length;i++){ existing[i].parentNode&&existing[i].parentNode.removeChild(existing[i]); }
+    if(existing.length>=1){ sync(existing[0]); return; }
+    var b=document.createElement('button');
+    b.id='lf-a11y-toggle';
+    b.type='button';
+    b.setAttribute('aria-label','Přepnout vysoký kontrast / Toggle high contrast');
+    b.setAttribute('title','Vysoký kontrast / High contrast (A11Y)');
+    b.innerHTML='<span class="lf-a11y-off" aria-hidden="false">A++ KONTRAST</span><span class="lf-a11y-on" aria-hidden="false">A− NORMÁL</span>';
+    b.addEventListener('click',function(){
+      var on=html.classList.toggle('lf-hc');
+      try{ localStorage.setItem(KEY,on?'1':'0'); }catch(_){}
+      sync(b);
+    });
+    document.body.appendChild(b);
+    sync(b);
+  }
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',mkBtn,{once:true});
+  } else {
+    mkBtn();
+  }
+})();
+</script>
 </body>
 </html>
