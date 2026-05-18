@@ -1,35 +1,58 @@
-<!DOCTYPE html><html lang=en data-theme=dark><head><meta charset=UTF-8><meta name=viewport content="width=device-width, initial-scale=1.0"><title>Ω > Δ > ◈ — Pipeline Seal Visualization</title><style>
+<!DOCTYPE html><html lang=en data-theme=dark><head><meta charset=UTF-8><meta name=viewport content="width=device-width, initial-scale=1.0"><meta name=color-scheme content="dark"><title>Ω &gt; Δ &gt; ◈ — Pipeline Seal Visualization</title><style>
 /* AUTOCON: external font import removed — system fallbacks active (monospace, sans-serif) */
+/* ──────────────────────────────────────────────────────────────
+   LEX FORENSICA · PIPELINE SEAL — FULL FUSION
+   Tokens: Ω red / Δ amber / ◈ teal · axial+hex+radial geometry
+   Async: deferred bg, RAF pause, reduced-motion guard, IO lazy
+   ────────────────────────────────────────────────────────────── */
 
 :root {
-  --bg: #0a0a0c;
-  --surface: #111114;
-  --surface-2: #18181c;
-  --border: #2a2a30;
-  --text: #e0dfd8;
-  --text-muted: #7a7970;
-  --text-faint: #4a4a44;
+  /* Lex Forensica core */
+  --bg: #05060a;
+  --bg-2: #07080d;
+  --surface: #0b0d12;
+  --surface-2: #10131a;
+  --surface-3: #161a22;
+  --border: rgba(255,255,255,0.045);
+  --border-mid: rgba(255,255,255,0.085);
+  --border-bright: rgba(255,255,255,0.16);
+  --text: #d6d5cc;
+  --text-muted: #6b6a60;
+  --text-faint: #393830;
+
+  /* Authority chain colours */
+  --omega: #ff3b3b;          /* Ω */
+  --delta: #e8af34;          /* Δ */
+  --diamond: #4fb3a3;         /* ◈ */
+
+  /* Functional palette */
   --red: #ff3b3b;
-  --red-dim: #7a1c1c;
-  --red-glow: rgba(255, 59, 59, 0.15);
-  --teal: #4f98a3;
-  --teal-dim: rgba(79, 152, 163, 0.2);
+  --red-dim: rgba(255,59,59,0.16);
+  --red-glow: rgba(255,59,59,0.22);
+  --teal: #4fb3a3;
+  --teal-dim: rgba(79,179,163,0.18);
   --amber: #e8af34;
-  --amber-dim: rgba(232, 175, 52, 0.15);
+  --amber-dim: rgba(232,175,52,0.16);
   --green: #6daa45;
-  --green-dim: rgba(109, 170, 69, 0.15);
+  --green-dim: rgba(109,170,69,0.16);
   --purple: #a86fdf;
-  --purple-dim: rgba(168, 111, 223, 0.15);
-  --mono: 'JetBrains Mono', monospace;
-  --sans: 'Inter', -apple-system, sans-serif;
+  --purple-dim: rgba(168,111,223,0.16);
+
+  --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+
+  --r-sm: 4px; --r-md: 8px; --r-lg: 12px; --r-xl: 16px;
+
+  /* Geometry */
+  --hex-fg: rgba(79,179,163,0.045);
+  --hex-fg-2: rgba(232,175,52,0.025);
+  --grid-fg: rgba(255,255,255,0.025);
+  --radial-pulse: 18s;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html {
-  -webkit-font-smoothing: antialiased;
-  scroll-behavior: smooth;
-}
+html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
 
 body {
   background: var(--bg);
@@ -39,102 +62,199 @@ body {
   line-height: 1.6;
   min-height: 100vh;
   overflow-x: hidden;
+  position: relative;
 }
 
-/* ─── CANVAS BACKGROUND ─── */
-#bg-canvas {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.4;
+/* ─── ASYNC LAYERED BACKGROUND ─── */
+/* Hex grid + axial grid + radial pulse — all CSS, GPU-friendly, lazy via .ready class */
+.bg-stack { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.bg-hex, .bg-grid, .bg-radial, .bg-canvas { position: absolute; inset: 0; opacity: 0; transition: opacity 1.2s ease; }
+.bg-stack.ready .bg-hex,
+.bg-stack.ready .bg-grid,
+.bg-stack.ready .bg-radial,
+.bg-stack.ready .bg-canvas { opacity: 1; }
+
+.bg-hex {
+  background-image:
+    radial-gradient(var(--hex-fg) 1px, transparent 1px),
+    radial-gradient(var(--hex-fg-2) 1px, transparent 1px);
+  background-size: 36px 62.4px, 36px 62.4px;
+  background-position: 0 0, 18px 31.2px;
+  mix-blend-mode: screen;
+}
+.bg-grid {
+  background-image:
+    linear-gradient(var(--grid-fg) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-fg) 1px, transparent 1px);
+  background-size: 120px 120px;
+  mask-image: radial-gradient(ellipse at center, #000 35%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 35%, transparent 80%);
+}
+.bg-radial {
+  background:
+    radial-gradient(circle at 15% 18%, rgba(255,59,59,0.045), transparent 45%),
+    radial-gradient(circle at 85% 22%, rgba(232,175,52,0.04), transparent 50%),
+    radial-gradient(circle at 50% 95%, rgba(79,179,163,0.05), transparent 55%);
+  animation: radial-drift var(--radial-pulse) ease-in-out infinite alternate;
+}
+@keyframes radial-drift {
+  from { transform: translate3d(0,0,0) scale(1); }
+  to   { transform: translate3d(0,-1.5%,0) scale(1.04); }
 }
 
-/* ─── MAIN LAYOUT ─── */
+/* Particle canvas: lazy, mounted async; opacity governed by .ready */
+#bg-canvas { width: 100%; height: 100%; display: block; }
+
+/* ─── SCANLINE ─── */
+.scanline {
+  position: fixed; inset: 0; pointer-events: none; z-index: 2;
+  background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(0,0,0,0.18) 3px 4px);
+  opacity: 0.32; mix-blend-mode: multiply;
+}
+
+/* ─── CONTAINER ─── */
 .container {
   position: relative;
-  z-index: 1;
-  max-width: 1200px;
+  z-index: 3;
+  max-width: 1240px;
   margin: 0 auto;
-  padding: 2rem 1.5rem 4rem;
+  padding: 2rem 1.5rem 5rem;
 }
+
+/* ─── TOP META BAR ─── */
+.metabar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; flex-wrap: wrap;
+  padding: 0.55rem 0.9rem;
+  background: rgba(7,8,13,0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+.meta-left, .meta-right { display: flex; align-items: center; gap: 0.9rem; }
+.meta-tag { color: var(--diamond); }
+.meta-sep { color: var(--text-faint); }
+.meta-ping { display: inline-flex; align-items: center; gap: 6px; color: var(--green); }
+.meta-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse-dot 2.4s ease-in-out infinite; }
 
 /* ─── HEADER ─── */
 .header {
   text-align: center;
-  padding: 3rem 0 2rem;
+  padding: 3.2rem 0 1.6rem;
+  position: relative;
 }
+.header::before {
+  content: '';
+  position: absolute; left: 50%; top: 0;
+  transform: translateX(-50%);
+  width: 220px; height: 220px;
+  border: 1px solid var(--border-mid);
+  border-radius: 50%;
+  opacity: 0.35;
+  pointer-events: none;
+}
+.header::after {
+  content: '';
+  position: absolute; left: 50%; top: 22px;
+  transform: translateX(-50%);
+  width: 132px; height: 132px;
+  border: 1px dashed var(--border);
+  border-radius: 50%;
+  opacity: 0.5;
+  pointer-events: none;
+  animation: slow-spin 64s linear infinite;
+}
+@keyframes slow-spin { to { transform: translateX(-50%) rotate(360deg); } }
 
 .authority-chain {
   font-family: var(--mono);
-  font-size: clamp(2rem, 5vw, 4rem);
+  font-size: clamp(2.2rem, 5.5vw, 4.4rem);
   font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--red);
-  text-shadow: 0 0 40px var(--red-glow), 0 0 80px rgba(255, 59, 59, 0.08);
+  letter-spacing: 0.12em;
+  text-shadow: 0 0 40px var(--red-glow), 0 0 80px rgba(255,59,59,0.06);
   margin-bottom: 0.5rem;
+  position: relative;
 }
-
-.authority-chain .omega { color: var(--red); }
-.authority-chain .delta { color: var(--amber); }
-.authority-chain .diamond { color: var(--teal); }
+.authority-chain .omega   { color: var(--omega); }
+.authority-chain .delta   { color: var(--delta); }
+.authority-chain .diamond { color: var(--diamond); }
 .authority-chain .separator { color: var(--text-faint); font-weight: 300; }
-
 .subtitle {
   font-family: var(--mono);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: var(--text-muted);
-  letter-spacing: 0.2em;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
 }
 
-/* ─── PIPELINE SEAL BAR ─── */
+/* ─── SEAL BAR ─── */
 .seal-bar {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--border-mid);
+  border-radius: var(--r-md);
+  padding: 1.1rem 1.4rem;
   margin: 2rem 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1rem;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 1rem;
+  position: relative; overflow: hidden;
 }
-
+.seal-bar::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: linear-gradient(180deg, var(--omega), var(--delta), var(--diamond));
+}
 .seal-label {
   font-family: var(--mono);
   font-size: 0.7rem;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--text-muted);
 }
-
-.seal-status {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.seal-chain {
+  font-family: var(--mono); font-size: 0.8rem; color: var(--text); margin-top: 0.25rem;
 }
-
+.seal-chain .sep { color: var(--text-faint); margin: 0 0.25rem; }
+.seal-status { display: flex; align-items: center; gap: 0.5rem; }
 .seal-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--red);
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--omega);
   animation: pulse-dot 2s ease-in-out infinite;
 }
-
 @keyframes pulse-dot {
-  0%, 100% { opacity: 1; box-shadow: 0 0 4px var(--red); }
-  50% { opacity: 0.5; box-shadow: 0 0 12px var(--red); }
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--omega); }
+  50%      { opacity: 0.45; box-shadow: 0 0 14px var(--omega); }
 }
-
 .seal-text {
   font-family: var(--mono);
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--red);
+  color: var(--omega);
+  letter-spacing: 0.1em;
+}
+
+/* ─── SECTION TITLE ─── */
+.section-title {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 2.6rem 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 0.6rem;
+}
+.section-title::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--diamond);
+  border-radius: 1px;
+  transform: rotate(45deg);
+  box-shadow: 0 0 8px var(--teal-dim);
 }
 
 /* ─── PIPELINE FLOW ─── */
@@ -145,304 +265,263 @@ body {
   margin: 2rem 0;
   overflow-x: auto;
   padding-bottom: 0.5rem;
+  scrollbar-width: thin;
 }
-
-.stage {
-  flex: 1;
-  min-width: 180px;
-  position: relative;
-}
-
+.stage { flex: 1; min-width: 188px; position: relative; }
 .stage-inner {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1.25rem 1rem;
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--r-md);
+  padding: 1.25rem 1rem 1.1rem;
   height: 100%;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
   cursor: default;
+  position: relative; overflow: hidden;
 }
-
+.stage-inner::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--stage-color, var(--diamond));
+  opacity: 0.7;
+}
+.stage-inner::after {
+  content: '';
+  position: absolute; right: -16px; top: -16px;
+  width: 52px; height: 52px;
+  background: radial-gradient(circle, var(--stage-color, var(--diamond)) 0%, transparent 70%);
+  opacity: 0.07;
+}
+.stage:nth-child(1) .stage-inner { --stage-color: var(--omega); }
+.stage:nth-child(3) .stage-inner { --stage-color: var(--diamond); }
+.stage:nth-child(5) .stage-inner { --stage-color: var(--purple); }
+.stage:nth-child(7) .stage-inner { --stage-color: var(--green); }
+.stage:nth-child(9) .stage-inner { --stage-color: var(--delta); }
 .stage-inner:hover {
-  border-color: var(--teal);
-  box-shadow: 0 0 20px var(--teal-dim);
+  border-color: var(--stage-color, var(--diamond));
+  box-shadow: 0 0 22px color-mix(in srgb, var(--stage-color, var(--diamond)) 22%, transparent);
+  transform: translateY(-1px);
 }
-
 .stage-name {
-  font-family: var(--mono);
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--teal);
+  font-family: var(--mono); font-size: 0.82rem; font-weight: 700;
+  color: var(--stage-color, var(--diamond));
   margin-bottom: 0.25rem;
+  letter-spacing: 0.05em;
 }
-
 .stage-persona {
-  font-family: var(--mono);
-  font-size: 0.65rem;
-  color: var(--text-muted);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-family: var(--mono); font-size: 0.62rem;
+  color: var(--text-muted); letter-spacing: 0.12em; text-transform: uppercase;
   margin-bottom: 0.75rem;
 }
-
 .stage-section {
-  font-size: 0.8rem;
-  color: var(--text);
-  line-height: 1.4;
-  margin-bottom: 0.5rem;
+  font-size: 0.8rem; color: var(--text); line-height: 1.45; margin-bottom: 0.5rem;
 }
-
 .stage-function {
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  line-height: 1.4;
+  font-size: 0.7rem; color: var(--text-muted); line-height: 1.45;
 }
-
 .arrow-connector {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  min-width: 36px;
+  display: flex; align-items: center; justify-content: center;
+  width: 36px; min-width: 36px;
   color: var(--text-faint);
-  font-family: var(--mono);
-  font-size: 1.2rem;
+  font-family: var(--mono); font-size: 1.2rem;
   flex-shrink: 0;
 }
 
-/* ─── AXIOM GRID ─── */
-.section-title {
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin: 3rem 0 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border);
-}
-
+/* ─── AXIOM GRID — hex feel ─── */
 .axiom-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(248px, 1fr));
+  gap: 0.7rem;
   margin-bottom: 2rem;
 }
-
 .axiom-card {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 6px;
+  border: 1px solid var(--border-mid);
+  border-radius: var(--r-sm);
   padding: 0.75rem 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  transition: border-color 0.3s ease;
+  display: flex; align-items: center; gap: 0.75rem;
+  transition: border-color 0.3s ease, transform 0.2s ease;
+  position: relative; overflow: hidden;
 }
-
-.axiom-card[data-state="SAT"] { border-left: 3px solid var(--green); }
-.axiom-card[data-state="UNSAT"] { border-left: 3px solid var(--red); }
-.axiom-card[data-state="UNKNOWN"] { border-left: 3px solid var(--amber); }
-
-.axiom-id {
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  font-weight: 600;
-  min-width: 56px;
+.axiom-card:hover { transform: translateY(-1px); }
+.axiom-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: var(--state-color, var(--text-faint));
 }
+.axiom-card[data-state="SAT"]      { --state-color: var(--green); }
+.axiom-card[data-state="UNSAT"]    { --state-color: var(--red); }
+.axiom-card[data-state="UNKNOWN"]  { --state-color: var(--amber); }
+.axiom-card[data-state="SAT"]:hover     { border-color: var(--green); box-shadow: 0 0 16px var(--green-dim); }
+.axiom-card[data-state="UNSAT"]:hover   { border-color: var(--red);   box-shadow: 0 0 16px var(--red-dim); }
+.axiom-card[data-state="UNKNOWN"]:hover { border-color: var(--amber); box-shadow: 0 0 16px var(--amber-dim); }
 
-.axiom-card[data-state="SAT"] .axiom-id { color: var(--green); }
-.axiom-card[data-state="UNSAT"] .axiom-id { color: var(--red); }
-.axiom-card[data-state="UNKNOWN"] .axiom-id { color: var(--amber); }
-
-.axiom-name {
-  font-size: 0.75rem;
-  color: var(--text);
-  flex: 1;
-}
-
+.axiom-id { font-family: var(--mono); font-size: 0.72rem; font-weight: 700; min-width: 38px; color: var(--state-color); }
+.axiom-name { font-size: 0.78rem; color: var(--text); flex: 1; font-family: var(--mono); letter-spacing: 0.04em; }
 .axiom-state {
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  padding: 2px 6px;
-  border-radius: 3px;
+  font-family: var(--mono); font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em;
+  padding: 2px 7px; border-radius: 3px;
+  background: color-mix(in srgb, var(--state-color) 14%, transparent);
+  color: var(--state-color);
 }
 
-.axiom-card[data-state="SAT"] .axiom-state { background: var(--green-dim); color: var(--green); }
-.axiom-card[data-state="UNSAT"] .axiom-state { background: var(--red-glow); color: var(--red); }
-.axiom-card[data-state="UNKNOWN"] .axiom-state { background: var(--amber-dim); color: var(--amber); }
-
-/* ─── DUAL SYSTEM TOPOLOGY ─── */
+/* ─── DUAL TOPOLOGY ─── */
 .topology {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   gap: 1.5rem;
   margin: 2rem 0;
-  align-items: start;
+  align-items: stretch;
 }
-
 .system-col {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  border: 1px solid var(--border-mid);
+  border-radius: var(--r-md);
   padding: 1.25rem;
+  position: relative; overflow: hidden;
 }
+.system-col::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--sys-color);
+}
+.system-col.sys-a { --sys-color: var(--omega); }
+.system-col.sys-b { --sys-color: var(--diamond); }
 
 .system-label {
   font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   margin-bottom: 1rem;
+  color: var(--sys-color);
 }
-
-.system-col.sys-a .system-label { color: var(--red); }
-.system-col.sys-b .system-label { color: var(--teal); }
-
-.node-list {
-  list-style: none;
-}
-
+.node-list { list-style: none; }
 .node-item {
-  font-family: var(--mono);
-  font-size: 0.75rem;
-  padding: 0.4rem 0;
+  font-family: var(--mono); font-size: 0.75rem;
+  padding: 0.45rem 0;
   border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  display: flex; align-items: center; gap: 0.55rem;
 }
-
 .node-item:last-child { border-bottom: none; }
-
 .node-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+  background: var(--sys-color);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--sys-color) 50%, transparent);
 }
-
-.sys-a .node-dot { background: var(--red); }
-.sys-b .node-dot { background: var(--teal); }
-
 .intercycle-col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;
   padding: 1rem 0;
 }
-
 .lambda-box {
   background: var(--surface);
   border: 1px solid var(--purple);
-  border-radius: 8px;
-  padding: 1rem 1.5rem;
+  border-radius: var(--r-md);
+  padding: 1rem 1.4rem;
   text-align: center;
-  box-shadow: 0 0 20px var(--purple-dim);
+  box-shadow: 0 0 22px var(--purple-dim);
+  position: relative;
 }
-
+.lambda-box::before, .lambda-box::after {
+  content: ''; position: absolute; width: 8px; height: 8px;
+  border: 1px solid var(--purple); background: var(--bg);
+  transform: rotate(45deg);
+}
+.lambda-box::before { top: -5px; left: 50%; margin-left: -4px; }
+.lambda-box::after  { bottom: -5px; left: 50%; margin-left: -4px; }
 .lambda-symbol {
-  font-family: var(--mono);
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--purple);
+  font-family: var(--mono); font-size: 1.55rem; font-weight: 700; color: var(--purple);
+}
+.lambda-label {
+  font-family: var(--mono); font-size: 0.6rem; color: var(--text-muted);
+  letter-spacing: 0.12em; text-transform: uppercase; margin-top: 0.25rem;
+}
+.intercycle-note {
+  font-family: var(--mono); font-size: 0.6rem; color: var(--text-faint);
+  text-align: center; line-height: 1.6;
 }
 
-.lambda-label {
+/* ─── O-SPACE SCORING ─── */
+.scoring {
+  background: var(--surface);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--r-md);
+  padding: 1.6rem;
+  margin: 2rem 0;
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+.scoring::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 50%, var(--teal-dim), transparent 70%);
+  opacity: 0.35; pointer-events: none;
+}
+.scoring-eq {
   font-family: var(--mono);
-  font-size: 0.6rem;
-  color: var(--text-muted);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-top: 0.25rem;
+  font-size: clamp(0.85rem, 2vw, 1.15rem);
+  color: var(--text);
+  letter-spacing: 0.02em;
+  line-height: 2;
+  position: relative; z-index: 1;
+}
+.scoring-eq .fn  { color: var(--diamond); font-weight: 700; }
+.scoring-eq .op  { color: var(--text-faint); }
+.scoring-eq .var { color: var(--delta); }
+.scoring-eq .mul { color: var(--omega); }
+.scoring-note {
+  font-size: 0.7rem; color: var(--text-muted);
+  margin-top: 0.75rem; font-family: var(--mono);
+  position: relative; z-index: 1;
 }
 
 /* ─── INTEGRITY TABLE ─── */
 .integrity-section {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1.5rem;
+  border: 1px solid var(--border-mid);
+  border-radius: var(--r-md);
+  padding: 1.4rem 1.6rem;
   margin: 2rem 0;
 }
-
 .integrity-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 0;
+  display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+  padding: 0.55rem 0;
   border-bottom: 1px solid var(--border);
   font-size: 0.8rem;
 }
-
 .integrity-row:last-child { border-bottom: none; }
-
 .integrity-key {
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  color: var(--text-muted);
+  font-family: var(--mono); font-size: 0.7rem; color: var(--text-muted);
+  letter-spacing: 0.08em;
 }
+.integrity-value { font-family: var(--mono); font-size: 0.76rem; font-weight: 600; }
+.integrity-value.hash { color: var(--diamond); font-size: 0.65rem; word-break: break-all; max-width: 480px; text-align: right; }
 
-.integrity-value {
-  font-family: var(--mono);
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.integrity-value.hash {
-  color: var(--teal);
-  font-size: 0.65rem;
-  word-break: break-all;
-  max-width: 400px;
-  text-align: right;
-}
-
-/* ─── VISUAL NETWORK MAP ─── */
+/* ─── NETWORK GRID ─── */
 .network-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(208px, 1fr));
+  gap: 0.7rem;
   margin: 1rem 0;
 }
-
 .network-card {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 6px;
+  border: 1px solid var(--border-mid);
+  border-radius: var(--r-sm);
   padding: 1rem;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+  position: relative; overflow: hidden;
 }
-
+.network-card::before {
+  content: ''; position: absolute; right: -12px; top: -12px;
+  width: 40px; height: 40px;
+  background: radial-gradient(circle, var(--teal-dim), transparent 70%);
+}
 .network-card:hover {
-  border-color: var(--teal);
-  box-shadow: 0 0 16px var(--teal-dim);
+  border-color: var(--diamond);
+  box-shadow: 0 0 18px var(--teal-dim);
+  transform: translateY(-1px);
 }
-
-.network-page {
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--teal);
-  margin-bottom: 0.25rem;
-}
-
-.network-state {
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  color: var(--amber);
-  letter-spacing: 0.05em;
-  margin-bottom: 0.5rem;
-}
-
-.network-layer {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-}
+.network-page { font-family: var(--mono); font-size: 0.72rem; font-weight: 700; color: var(--diamond); margin-bottom: 0.3rem; letter-spacing: 0.04em; }
+.network-state { font-family: var(--mono); font-size: 0.6rem; color: var(--delta); letter-spacing: 0.08em; margin-bottom: 0.5rem; }
+.network-layer { font-size: 0.74rem; color: var(--text-muted); line-height: 1.4; }
 
 /* ─── ORIGIN ─── */
 .origin-grid {
@@ -451,64 +530,32 @@ body {
   gap: 0.75rem;
   margin: 1rem 0;
 }
-
 .origin-card {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 1rem;
+  border: 1px solid var(--border-mid);
+  border-radius: var(--r-sm);
+  padding: 1.1rem;
   text-align: center;
+  position: relative; overflow: hidden;
 }
-
-.origin-issue {
-  font-family: var(--mono);
-  font-size: 0.65rem;
-  color: var(--text-faint);
-  margin-bottom: 0.25rem;
+.origin-card::before {
+  content: ''; position: absolute; left: 50%; top: -6px;
+  transform: translateX(-50%) rotate(45deg);
+  width: 10px; height: 10px;
+  background: var(--delta);
+  opacity: 0.6;
 }
-
-.origin-name {
-  font-family: var(--mono);
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 0.5rem;
-}
-
+.origin-issue { font-family: var(--mono); font-size: 0.66rem; color: var(--text-faint); margin-bottom: 0.25rem; }
+.origin-name { font-family: var(--mono); font-size: 0.82rem; font-weight: 700; color: var(--text); margin-bottom: 0.55rem; }
 .origin-status {
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  color: var(--amber);
-  background: var(--amber-dim);
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 3px;
+  font-family: var(--mono); font-size: 0.6rem; font-weight: 700; letter-spacing: 0.16em;
+  color: var(--delta); background: var(--amber-dim);
+  display: inline-block; padding: 2px 8px; border-radius: 3px;
 }
 
-/* ─── SCORING FUNCTION ─── */
-.scoring {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin: 2rem 0;
-  text-align: center;
-}
-
-.scoring-eq {
-  font-family: var(--mono);
-  font-size: clamp(0.8rem, 2vw, 1.1rem);
-  color: var(--text);
-  letter-spacing: 0.02em;
-  line-height: 2;
-}
-
-.scoring-eq .fn { color: var(--teal); font-weight: 600; }
-.scoring-eq .op { color: var(--text-faint); }
-.scoring-eq .var { color: var(--amber); }
-.scoring-eq .mul { color: var(--red); }
+/* ─── REVEAL ─── */
+.reveal { opacity: 0; transform: translateY(12px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.reveal.on { opacity: 1; transform: none; }
 
 /* ─── FOOTER ─── */
 .footer {
@@ -517,19 +564,13 @@ body {
   border-top: 1px solid var(--border);
   margin-top: 3rem;
 }
-
 .footer-text {
   font-family: var(--mono);
-  font-size: 0.65rem;
+  font-size: 0.66rem;
   color: var(--text-faint);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
 }
-
-.footer-link {
-  color: var(--teal);
-  text-decoration: none;
-}
-
+.footer-link { color: var(--diamond); text-decoration: none; }
 .footer-link:hover { text-decoration: underline; }
 
 /* ─── RESPONSIVE ─── */
@@ -539,66 +580,142 @@ body {
   .topology { grid-template-columns: 1fr; }
   .origin-grid { grid-template-columns: 1fr; }
   .seal-bar { flex-direction: column; align-items: flex-start; }
-}
-</style></head><body><canvas id=bg-canvas></canvas><div class=container><header class=header><div class=authority-chain><span class=omega>Ω</span><span class=separator> &gt; </span><span class=delta>Δ</span><span class=separator> &gt; </span><span class=diamond>◈</span></div><div class=subtitle>STEEL Invariant Layer — Authority Hierarchy</div></header><div class=seal-bar><div><div class=seal-label>Pipeline Seal</div><div style=font-family:var(--mono);font-size:0.8rem;color:var(--text);margin-top:0.25rem;> MIND1 <span style=color:var(--text-faint)>→</span> BRIDGE <span style=color:var(--text-faint)>→</span> DEEP_1 <span style=color:var(--text-faint)>→</span> LOOP_CYCLE <span style=color:var(--text-faint)>→</span> DEFENSE_SYNTHESIS </div></div><div class=seal-status><div class=seal-dot></div><div class=seal-text>STOP_SERVER: ACTIVE</div></div></div><div class=section-title>Pipeline Stages — Article Alignment</div><div class=pipeline-flow><div class=stage><div class=stage-inner><div class=stage-name>MIND1</div><div class=stage-persona>STATIC · preprocessing</div><div class=stage-section>Opening — silent failure, 6.63x drift, S&P 500</div><div class=stage-function>Normalized event frame extraction — raw signal enters the system</div></div></div><div class=arrow-connector>→</div><div class=stage><div class=stage-inner><div class=stage-name>BRIDGE</div><div class=stage-persona>hashFact · SHA-256</div><div class=stage-section>CobraLayer — System A/B, λ_agree, Redline, O(s)</div><div class=stage-function>System topology with integrity hash — structural seal applied</div></div></div><div class=arrow-connector>→</div><div class=stage><div class=stage-inner><div class=stage-name>DEEP_1</div><div class=stage-persona>DEEP · MIND2</div><div class=stage-section>Evolutionary Substrate + Formal Verification</div><div class=stage-function>Deep causal inference — proofs, path collapse, ISA verification</div></div></div><div class=arrow-connector>→</div><div class=stage><div class=stage-inner><div class=stage-name>LOOP_CYCLE</div><div class=stage-persona>12 axiomatic checks</div><div class=stage-section>Why This Matters Now — regulatory, iatrogenic, drift</div><div class=stage-function>Axiom validation against real-world evidence — re-runs DEEP_1 up to 2× on CRITICAL</div></div></div><div class=arrow-connector>→</div><div class=stage><div class=stage-inner><div class=stage-name>DEFENSE_SYNTHESIS</div><div class=stage-persona>Ω &gt; Δ &gt; ◈</div><div class=stage-section>Hyperspace Layer — Lilly, supraself metaprogram</div><div class=stage-function>The layer above LOOP_CYCLE — cannot be overridden by any subsystem</div></div></div></div><div class=section-title>Dual System Topology</div><div class=topology><div class="system-col sys-a"><div class=system-label>System A — Adversarial Verification</div><ul class=node-list><li class=node-item><span class=node-dot></span>AV Engine</li><li class=node-item><span class=node-dot></span>Selfcheck</li><li class=node-item><span class=node-dot></span>Opposites</li><li class=node-item><span class=node-dot></span>Policy</li><li class=node-item><span class=node-dot></span>→ emit</li></ul></div><div class=intercycle-col><div class=lambda-box><div class=lambda-symbol>λ_agree</div><div class=lambda-label>Intercycle Coherence</div></div><div style=font-family:var(--mono);font-size:0.6rem;color:var(--text-faint);text-align:center;> co-training<br>shared trunk </div></div><div class="system-col sys-b"><div class=system-label>System B — Signal Processing</div><ul class=node-list><li class=node-item><span class=node-dot></span>SANS / LBNP</li><li class=node-item><span class=node-dot></span>FLUID / ICP</li><li class=node-item><span class=node-dot></span>Ocular</li><li class=node-item><span class=node-dot></span>→ emit</li></ul></div></div><div class=section-title>Axiom States — A1 through A13</div><div class=axiom-grid><div class=axiom-card data-state=SAT><span class=axiom-id>A1</span><span class=axiom-name>SILENCE</span><span class=axiom-state>SAT</span></div><div class=axiom-card data-state=SAT><span class=axiom-id>A2</span><span class=axiom-name>ANCHOR</span><span class=axiom-state>SAT</span></div><div class=axiom-card data-state=UNKNOWN><span class=axiom-id>A3</span><span class=axiom-name>IATROGEN</span><span class=axiom-state>UNKNOWN</span></div><div class=axiom-card data-state=SAT><span class=axiom-id>A4</span><span class=axiom-name>CIRCULAR</span><span class=axiom-state>SAT</span></div><div class=axiom-card data-state=UNKNOWN><span class=axiom-id>A5</span><span class=axiom-name>MONOPOLY</span><span class=axiom-state>UNKNOWN</span></div><div class=axiom-card data-state=SAT><span class=axiom-id>A6</span><span class=axiom-name>DELEGATE</span><span class=axiom-state>SAT</span></div><div class=axiom-card data-state=UNSAT><span class=axiom-id>A7</span><span class=axiom-name>RETRO</span><span class=axiom-state>UNSAT</span></div><div class=axiom-card data-state=UNKNOWN><span class=axiom-id>A8</span><span class=axiom-name>DRIFT</span><span class=axiom-state>UNKNOWN</span></div><div class=axiom-card data-state=SAT><span class=axiom-id>A9</span><span class=axiom-name>CONSENT</span><span class=axiom-state>SAT</span></div><div class=axiom-card data-state=UNKNOWN><span class=axiom-id>A10</span><span class=axiom-name>RISK</span><span class=axiom-state>UNKNOWN</span></div><div class=axiom-card data-state=UNKNOWN><span class=axiom-id>A11</span><span class=axiom-name>VOICE</span><span class=axiom-state>UNKNOWN</span></div><div class=axiom-card data-state=SAT><span class=axiom-id>A12</span><span class=axiom-name>SELFCERT</span><span class=axiom-state>SAT</span></div><div class=axiom-card data-state=UNKNOWN><span class=axiom-id>A13</span><span class=axiom-name>META</span><span class=axiom-state>UNKNOWN</span></div></div><div class=section-title>O-Space Scoring Function</div><div class=scoring><div class=scoring-eq><span class=fn>O</span><span class=op>(</span><span class=var>s</span><span class=op>) = (</span><span class=var>b0</span> <span class=mul>×</span> <span class=var>b1</span> <span class=mul>×</span> <span class=var>b2</span> <span class=mul>×</span> <span class=var>b3</span><span class=op>) ×</span> <span class=mul>anomaly_multiplier</span> <span class=op>×</span> <span class=mul>override_multiplier</span></div><div style=font-size:0.7rem;color:var(--text-muted);margin-top:0.75rem;font-family:var(--mono);> Multiplicative structure — zero in any b-factor propagates to zero output </div></div><div class=section-title>Integrity Verification</div><div class=integrity-section><div class=integrity-row><span class=integrity-key>PIPELINE-MAP.md SHA-256</span><span class="integrity-value hash">f3cc253f43ad0e43ae6af8b31d5a517a4653addbdb5317be88536be14e5b3d0a</span></div><div class=integrity-row><span class=integrity-key>SUBSTACK-ARTICLE.md SHA-256</span><span class="integrity-value hash">61210e1b12bc6f6921ecc9d805394d7999b48850d2891ff0e3396b6ac8485a23</span></div><div class=integrity-row><span class=integrity-key>MIND1 Output Hash</span><span class=integrity-value style=color:var(--teal);>hashFact() → mind1OutputHash</span></div><div class=integrity-row><span class=integrity-key>STEEL Invariant</span><span class=integrity-value style=color:var(--red);>Ω &gt; Δ &gt; ◈ — unoverridable</span></div><div class=integrity-row><span class=integrity-key>SKSS Circular Cypher</span><span class=integrity-value style=color:var(--amber);>Self-validating integrity loop</span></div><div class=integrity-row><span class=integrity-key>Encryption</span><span class=integrity-value style=color:var(--text);>AES-256-GCM · PBKDF2 · 100k iterations</span></div><div class=integrity-row><span class=integrity-key>Commit</span><span class=integrity-value style=color:var(--green);>b00c7ad — hasx</span></div></div><div class=section-title>Visual Network — steelssystem.github.io</div><div class=network-grid><div class=network-card><div class=network-page>Živý Archiv</div><div class=network-state>STATIC · MIND1</div><div class=network-layer>Opening — raw signal</div></div><div class=network-card><div class=network-page>Introspekce</div><div class=network-state>SIGNAL CHAIN</div><div class=network-layer>CobraLayer — verification topology</div></div><div class=network-card><div class=network-page>Semantic View</div><div class=network-state>FLUID · REACTIVE</div><div class=network-layer>Seed/Hash/Security — integrity network</div></div><div class=network-card><div class=network-page>Ambient</div><div class=network-state>DEEP · MIND2</div><div class=network-layer>Evolutionary Substrate + Formal Verification</div></div><div class=network-card><div class=network-page>Control Room</div><div class=network-state>CONTROL ROOM</div><div class=network-layer>Why This Matters Now — operational monitoring</div></div></div><div class=section-title>Origin — Open-Loop Architecture</div><div class=origin-grid><div class=origin-card><div class=origin-issue>#4</div><div class=origin-name>o / o-tres-D</div><div class=origin-status>OPEN</div></div><div class=origin-card><div class=origin-issue>#2</div><div class=origin-name>1.0 — Meta</div><div class=origin-status>OPEN</div></div><div class=origin-card><div class=origin-issue>#5</div><div class=origin-name>LEXS CRYPTO FILE</div><div class=origin-status>OPEN</div></div></div><footer class=footer><div class=footer-text> PIPELINE-MAP.md · <a href=https://github.com/SteelsSystem/CobraLayer class=footer-link>SteelsSystem/CobraLayer</a> · commit b00c7ad </div></footer></div><script>
-// ─── BACKGROUND PARTICLE NETWORK ───
-const canvas = document.getElementById('bg-canvas');
-const ctx = canvas.getContext('2d');
-let particles = [];
-const PARTICLE_COUNT = 60;
-const CONNECTION_DIST = 150;
-
-function resize() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-window.addEventListener('resize', resize);
-resize();
-
-class Particle {
-  constructor() {
-    this.x = Math.random() * canvas.width;
-    this.y = Math.random() * canvas.height;
-    this.vx = (Math.random() - 0.5) * 0.3;
-    this.vy = (Math.random() - 0.5) * 0.3;
-    this.r = Math.random() * 1.5 + 0.5;
-  }
-  update() {
-    this.x += this.vx;
-    this.y += this.vy;
-    if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-    if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-  }
-  draw() {
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(79, 152, 163, 0.5)';
-    ctx.fill();
-  }
+  .integrity-value.hash { text-align: left; max-width: 100%; }
 }
 
-for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
+/* ─── REDUCED MOTION ─── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+  .reveal { opacity: 1; transform: none; }
+}
+</style></head><body><div class=bg-stack id=bgStack><div class=bg-radial></div><div class=bg-grid></div><div class=bg-hex></div><canvas id=bg-canvas class=bg-canvas aria-hidden="true"></canvas></div><div class=scanline aria-hidden="true"></div><div class=container><div class=metabar><div class=meta-left><span class=meta-tag>LEX FORENSICA</span><span class=meta-sep>·</span><span>PIPELINE SEAL</span><span class=meta-sep>·</span><span>v1.0</span></div><div class=meta-right><span class=meta-ping><span class=meta-dot></span>LIVE</span><span class=meta-sep>·</span><span>b00c7ad</span></div></div><header class=header><div class=authority-chain><span class=omega>Ω</span><span class=separator> &gt; </span><span class=delta>Δ</span><span class=separator> &gt; </span><span class=diamond>◈</span></div><div class=subtitle>STEEL Invariant Layer — Authority Hierarchy</div></header><div class="seal-bar reveal"><div><div class=seal-label>Pipeline Seal</div><div class=seal-chain>MIND1<span class=sep>→</span>BRIDGE<span class=sep>→</span>DEEP_1<span class=sep>→</span>LOOP_CYCLE<span class=sep>→</span>DEFENSE_SYNTHESIS</div></div><div class=seal-status><div class=seal-dot></div><div class=seal-text>STOP_SERVER: ACTIVE</div></div></div><div class=section-title>Pipeline Stages — Article Alignment</div><div class="pipeline-flow reveal"><div class=stage><div class=stage-inner><div class=stage-name>MIND1</div><div class=stage-persona>STATIC · preprocessing</div><div class=stage-section>Opening — silent failure, 6.63x drift, S&amp;P 500</div><div class=stage-function>Normalized event frame extraction — raw signal enters the system</div></div></div><div class=arrow-connector>→</div><div class=stage><div class=stage-inner><div class=stage-name>BRIDGE</div><div class=stage-persona>hashFact · SHA-256</div><div class=stage-section>CobraLayer — System A/B, λ_agree, Redline, O(s)</div><div class=stage-function>System topology with integrity hash — structural seal applied</div></div></div><div class=arrow-connector>→</div><div class=stage><div class=stage-inner><div class=stage-name>DEEP_1</div><div class=stage-persona>DEEP · MIND2</div><div class=stage-section>Evolutionary Substrate + Formal Verification</div><div class=stage-function>Deep causal inference — proofs, path collapse, ISA verification</div></div></div><div class=arrow-connector>→</div><div class=stage><div class=stage-inner><div class=stage-name>LOOP_CYCLE</div><div class=stage-persona>12 axiomatic checks</div><div class=stage-section>Why This Matters Now — regulatory, iatrogenic, drift</div><div class=stage-function>Axiom validation against real-world evidence — re-runs DEEP_1 up to 2× on CRITICAL</div></div></div><div class=arrow-connector>→</div><div class=stage><div class=stage-inner><div class=stage-name>DEFENSE_SYNTHESIS</div><div class=stage-persona>Ω &gt; Δ &gt; ◈</div><div class=stage-section>Hyperspace Layer — Lilly, supraself metaprogram</div><div class=stage-function>The layer above LOOP_CYCLE — cannot be overridden by any subsystem</div></div></div></div><div class=section-title>Dual System Topology</div><div class="topology reveal"><div class="system-col sys-a"><div class=system-label>System A — Adversarial Verification</div><ul class=node-list><li class=node-item><span class=node-dot></span>AV Engine</li><li class=node-item><span class=node-dot></span>Selfcheck</li><li class=node-item><span class=node-dot></span>Opposites</li><li class=node-item><span class=node-dot></span>Policy</li><li class=node-item><span class=node-dot></span>→ emit</li></ul></div><div class=intercycle-col><div class=lambda-box><div class=lambda-symbol>λ_agree</div><div class=lambda-label>Intercycle Coherence</div></div><div class=intercycle-note>co-training<br>shared trunk</div></div><div class="system-col sys-b"><div class=system-label>System B — Signal Processing</div><ul class=node-list><li class=node-item><span class=node-dot></span>SANS / LBNP</li><li class=node-item><span class=node-dot></span>FLUID / ICP</li><li class=node-item><span class=node-dot></span>Ocular</li><li class=node-item><span class=node-dot></span>→ emit</li></ul></div></div><div class=section-title>Axiom States — A1 through A13</div><div class="axiom-grid reveal"><div class=axiom-card data-state=SAT><span class=axiom-id>A1</span><span class=axiom-name>SILENCE</span><span class=axiom-state>SAT</span></div><div class=axiom-card data-state=SAT><span class=axiom-id>A2</span><span class=axiom-name>ANCHOR</span><span class=axiom-state>SAT</span></div><div class=axiom-card data-state=UNKNOWN><span class=axiom-id>A3</span><span class=axiom-name>IATROGEN</span><span class=axiom-state>UNKNOWN</span></div><div class=axiom-card data-state=SAT><span class=axiom-id>A4</span><span class=axiom-name>CIRCULAR</span><span class=axiom-state>SAT</span></div><div class=axiom-card data-state=UNKNOWN><span class=axiom-id>A5</span><span class=axiom-name>MONOPOLY</span><span class=axiom-state>UNKNOWN</span></div><div class=axiom-card data-state=SAT><span class=axiom-id>A6</span><span class=axiom-name>DELEGATE</span><span class=axiom-state>SAT</span></div><div class=axiom-card data-state=UNSAT><span class=axiom-id>A7</span><span class=axiom-name>RETRO</span><span class=axiom-state>UNSAT</span></div><div class=axiom-card data-state=UNKNOWN><span class=axiom-id>A8</span><span class=axiom-name>DRIFT</span><span class=axiom-state>UNKNOWN</span></div><div class=axiom-card data-state=SAT><span class=axiom-id>A9</span><span class=axiom-name>CONSENT</span><span class=axiom-state>SAT</span></div><div class=axiom-card data-state=UNKNOWN><span class=axiom-id>A10</span><span class=axiom-name>RISK</span><span class=axiom-state>UNKNOWN</span></div><div class=axiom-card data-state=UNKNOWN><span class=axiom-id>A11</span><span class=axiom-name>VOICE</span><span class=axiom-state>UNKNOWN</span></div><div class=axiom-card data-state=SAT><span class=axiom-id>A12</span><span class=axiom-name>SELFCERT</span><span class=axiom-state>SAT</span></div><div class=axiom-card data-state=UNKNOWN><span class=axiom-id>A13</span><span class=axiom-name>META</span><span class=axiom-state>UNKNOWN</span></div></div><div class=section-title>O-Space Scoring Function</div><div class="scoring reveal"><div class=scoring-eq><span class=fn>O</span><span class=op>(</span><span class=var>s</span><span class=op>) = (</span><span class=var>b0</span> <span class=mul>×</span> <span class=var>b1</span> <span class=mul>×</span> <span class=var>b2</span> <span class=mul>×</span> <span class=var>b3</span><span class=op>) ×</span> <span class=mul>anomaly_multiplier</span> <span class=op>×</span> <span class=mul>override_multiplier</span></div><div class=scoring-note>Multiplicative structure — zero in any b-factor propagates to zero output</div></div><div class=section-title>Integrity Verification</div><div class="integrity-section reveal"><div class=integrity-row><span class=integrity-key>PIPELINE-MAP.md SHA-256</span><span class="integrity-value hash">f3cc253f43ad0e43ae6af8b31d5a517a4653addbdb5317be88536be14e5b3d0a</span></div><div class=integrity-row><span class=integrity-key>SUBSTACK-ARTICLE.md SHA-256</span><span class="integrity-value hash">61210e1b12bc6f6921ecc9d805394d7999b48850d2891ff0e3396b6ac8485a23</span></div><div class=integrity-row><span class=integrity-key>MIND1 Output Hash</span><span class=integrity-value style="color:var(--diamond)">hashFact() → mind1OutputHash</span></div><div class=integrity-row><span class=integrity-key>STEEL Invariant</span><span class=integrity-value style="color:var(--omega)">Ω &gt; Δ &gt; ◈ — unoverridable</span></div><div class=integrity-row><span class=integrity-key>SKSS Circular Cypher</span><span class=integrity-value style="color:var(--delta)">Self-validating integrity loop</span></div><div class=integrity-row><span class=integrity-key>Encryption</span><span class=integrity-value style="color:var(--text)">AES-256-GCM · PBKDF2 · 100k iterations</span></div><div class=integrity-row><span class=integrity-key>Commit</span><span class=integrity-value style="color:var(--green)">b00c7ad — hasx</span></div></div><div class=section-title>Visual Network — steelssystem.github.io</div><div class="network-grid reveal"><div class=network-card><div class=network-page>Živý Archiv</div><div class=network-state>STATIC · MIND1</div><div class=network-layer>Opening — raw signal</div></div><div class=network-card><div class=network-page>Introspekce</div><div class=network-state>SIGNAL CHAIN</div><div class=network-layer>CobraLayer — verification topology</div></div><div class=network-card><div class=network-page>Semantic View</div><div class=network-state>FLUID · REACTIVE</div><div class=network-layer>Seed/Hash/Security — integrity network</div></div><div class=network-card><div class=network-page>Ambient</div><div class=network-state>DEEP · MIND2</div><div class=network-layer>Evolutionary Substrate + Formal Verification</div></div><div class=network-card><div class=network-page>Control Room</div><div class=network-state>CONTROL ROOM</div><div class=network-layer>Why This Matters Now — operational monitoring</div></div></div><div class=section-title>Origin — Open-Loop Architecture</div><div class="origin-grid reveal"><div class=origin-card><div class=origin-issue>#4</div><div class=origin-name>o / o-tres-D</div><div class=origin-status>OPEN</div></div><div class=origin-card><div class=origin-issue>#2</div><div class=origin-name>1.0 — Meta</div><div class=origin-status>OPEN</div></div><div class=origin-card><div class=origin-issue>#5</div><div class=origin-name>LEXS CRYPTO FILE</div><div class=origin-status>OPEN</div></div></div><footer class=footer><div class=footer-text>PIPELINE-MAP.md · <a href="https://github.com/SteelsSystem/CobraLayer" class=footer-link>SteelsSystem/CobraLayer</a> · commit b00c7ad</div></footer></div><script>
+/* ─────────────────────────────────────────────────────────────
+   ASYNC RENDER LAYER — Lex Forensica
+   · Deferred init via requestIdleCallback (fallback: setTimeout)
+   · prefers-reduced-motion guard → skip canvas + heavy anim
+   · IntersectionObserver for reveal (lazy)
+   · Page Visibility API → pause RAF when hidden
+   · resize coalesced via RAF
+   ───────────────────────────────────────────────────────────── */
+(function () {
+  'use strict';
 
-function animate() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  for (let i = 0; i < particles.length; i++) {
-    particles[i].update();
-    particles[i].draw();
-    for (let j = i + 1; j < particles.length; j++) {
-      const dx = particles[i].x - particles[j].x;
-      const dy = particles[i].y - particles[j].y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < CONNECTION_DIST) {
-        ctx.beginPath();
-        ctx.moveTo(particles[i].x, particles[i].y);
-        ctx.lineTo(particles[j].x, particles[j].y);
-        ctx.strokeStyle = `rgba(79, 152, 163, ${0.12 * (1 - dist / CONNECTION_DIST)})`;
-        ctx.lineWidth = 0.5;
-        ctx.stroke();
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Reveal lazy
+  const revealNodes = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const revealObs = new IntersectionObserver(entries => {
+      for (const e of entries) {
+        if (e.isIntersecting) { e.target.classList.add('on'); revealObs.unobserve(e.target); }
       }
-    }
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    revealNodes.forEach(n => revealObs.observe(n));
+  } else {
+    revealNodes.forEach(n => n.classList.add('on'));
   }
-  requestAnimationFrame(animate);
-}
-animate();
+
+  // Defer non-critical visual systems
+  const idle = window.requestIdleCallback || function (cb) { return setTimeout(cb, 200); };
+
+  idle(function initBackgroundStack() {
+    const stack = document.getElementById('bgStack');
+    if (stack) stack.classList.add('ready');
+  });
+
+  // Particle canvas — skip if reduced motion
+  if (reducedMotion) return;
+
+  idle(function initCanvas() {
+    const canvas = document.getElementById('bg-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d', { alpha: true });
+    if (!ctx) return;
+
+    let dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let W = 0, H = 0;
+    let particles = [];
+    const PARTICLE_TARGET = 56;
+    const CONNECTION_DIST = 150;
+    let rafId = 0;
+    let running = true;
+    let resizePending = false;
+
+    function applySize() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      W = w; H = h;
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      resizePending = false;
+    }
+    function onResize() {
+      if (resizePending) return;
+      resizePending = true;
+      requestAnimationFrame(applySize);
+    }
+    window.addEventListener('resize', onResize, { passive: true });
+    applySize();
+
+    function makeParticle() {
+      return {
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.28,
+        vy: (Math.random() - 0.5) * 0.28,
+        r: Math.random() * 1.4 + 0.4
+      };
+    }
+    for (let i = 0; i < PARTICLE_TARGET; i++) particles.push(makeParticle());
+
+    function frame() {
+      if (!running) return;
+      ctx.clearRect(0, 0, W, H);
+      const len = particles.length;
+      for (let i = 0; i < len; i++) {
+        const p = particles[i];
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0 || p.x > W) p.vx *= -1;
+        if (p.y < 0 || p.y > H) p.vy *= -1;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(79,179,163,0.42)';
+        ctx.fill();
+      }
+      for (let i = 0; i < len; i++) {
+        const a = particles[i];
+        for (let j = i + 1; j < len; j++) {
+          const b = particles[j];
+          const dx = a.x - b.x, dy = a.y - b.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < CONNECTION_DIST * CONNECTION_DIST) {
+            const d = Math.sqrt(d2);
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+            ctx.strokeStyle = 'rgba(79,179,163,' + (0.12 * (1 - d / CONNECTION_DIST)).toFixed(3) + ')';
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+      rafId = requestAnimationFrame(frame);
+    }
+
+    // Pause when hidden — saves CPU
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) {
+        running = false;
+        if (rafId) cancelAnimationFrame(rafId);
+      } else if (!running) {
+        running = true;
+        rafId = requestAnimationFrame(frame);
+      }
+    });
+
+    rafId = requestAnimationFrame(frame);
+  });
+})();
 </script></body></html>
